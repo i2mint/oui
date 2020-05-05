@@ -51,6 +51,8 @@ but with many properties than can be turned off/on or parametrized
 Collapse/Expand file tree view?
 Page by page flat view?
 
+## Configs CRUD
+
 ## Hear sound
 
 What do we do when the sound is big?
