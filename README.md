@@ -15,6 +15,8 @@ We should have three "contexts" in mind:
 * use from python (jupyter notebooks)
 
 What components?
+Some really high level ones (lists, tables, nested data)?
+Some more specific: Hear/view sound, configs CRUD, etc.
 
 # Components
 
