@@ -1,0 +1,30 @@
+{
+    "options": {
+        "fillColors": [
+            "#ff0000", "#00ffe6",
+            "#ffc300", "#8c00ff",
+            "#ff5500", "#0048ff",
+            "#3acc00", "#ff00c8",
+            "#fc8383", "#1fad8c",
+            "#bbf53d", "#b96ef7",
+            "#bf6a40", "#0d7cf2",
+            "#6ef777", "#ff6699",
+            "#a30000", "#004d45",
+            "#a5750d", "#460080",
+            "#802b00", "#000680",
+            "#1d6600", "#660050"
+        ],
+        "fps": 60,
+        "height": 200,
+        "maxIterations": 240,
+        "nodeSize": 1,
+        "untaggedColor": "#444",
+        "width": 200
+    },
+    "tsneOptions": {
+        "dim": 2,
+        "epsilon": 50,
+        "perplexity": 30,
+        "spread": 10
+    }
+}

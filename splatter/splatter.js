@@ -6,41 +6,13 @@ require.config({
     }
 });
 
-console.log('loaded splatter v1.1');
+console.log('loaded splatter v1.1.1');
+
 
 define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
-    const defaultFillColors = [
-        '#ff0000', '#00ffe6',
-        '#ffc300', '#8c00ff',
-        '#ff5500', '#0048ff',
-        '#3acc00', '#ff00c8',
-        '#fc8383', '#1fad8c',
-        '#bbf53d', '#b96ef7',
-        '#bf6a40', '#0d7cf2',
-        '#6ef777', '#ff6699',
-        '#a30000', '#004d45',
-        '#a5750d', '#460080',
-        '#802b00', '#000680',
-        '#1d6600', '#660050'];
-
     const margin = 10;
-    const defaultOptions = {
-        fillColors: defaultFillColors.slice(),
-        fps: 60,
-        height: 200,
-        maxIterations: 240,
-        nodeSize: 1,
-        untaggedColor: '#444',
-        width: 200,
-    };
-    const defaultTsneOptions = {
-        dim: 2,
-        epsilon: 50,
-        initial: 'current',
-        // measure: 'euclidean',
-        perplexity: 30,
-        spread: 10,
-    };
+    let defaultOptions;
+    let defaultTsneOptions;
     let options = Object.assign({}, defaultOptions);
     let tsneOptions = Object.assign({}, defaultTsneOptions);
     let svg;
@@ -174,7 +146,7 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         }
     }
 
-    function splatter(element, data, userOptions) {
+    function renderNetwork(element, data, userOptions) {
         options = Object.assign({}, defaultOptions, (userOptions || {}));
         const userTsneOptions = userOptions && userOptions.tsne ? userOptions.tsne : {};
         tsneOptions = Object.assign({}, defaultTsneOptions, userTsneOptions);
@@ -302,23 +274,23 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         //     .attr('opacity', 0.4)
         //     .attr('stroke', 'black');
 
-        // const tooltip = svg.append('text')
-        //     .attr('dy', '-0.25em')
-        //     .attr('font-size', '10pt')
-        //     .attr('pointer-events', 'none')
-        //     .attr('text-anchor', 'middle')
-        //     .attr('id', 'TOOLTIPTEST');
+        const tooltip = svg.append('text')
+            .attr('dy', '-0.25em')
+            .attr('font-size', '10pt')
+            .attr('pointer-events', 'none')
+            .attr('text-anchor', 'middle')
+            .attr('id', 'TOOLTIPTEST');
 
-        // function nodeMouseOver(item: any) {
-        //     tooltip.attr('y', d3.mouse(svg.node())[1] - 10);
-        //     tooltip.selectAll('tspan')
-        //         .data([item.tag ? item.tag : 'untagged'])
-        //         .attr('dy', (d, i) => i * 15)
-        //         .attr('x', d3.event.x)
-        //         .text((d) => d)
-        //         .enter()
-        //         .append('tspan');
-        // }
+        function nodeMouseOver(item) {
+            tooltip.attr('y', d3.mouse(svg.node())[1] - 10);
+            tooltip.selectAll('tspan')
+                .data([item.tag ? item.tag : 'untagged'])
+                .attr('dy', (d, i) => i * 15)
+                .attr('x', d3.event.x)
+                .text((d) => d)
+                .enter()
+                .append('tspan');
+        }
 
         // hoverNodeIndicator = (newNode: SplatterNode) => {
         //     gnodes.filter((d) => d.name === newNode.name)
@@ -336,7 +308,7 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
 
         // let doubleClickMs = 0;
         // const doubleClickThreshold = 200;
-
+        gnodes.on('mousemove', nodeMouseOver)
         // gnodes.on('dblclick', (d) => {
         //         doubleClickMs = Date.now();
         //         playNode(d);
@@ -357,7 +329,6 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         //             }, doubleClickThreshold);
         //         }
         //     })
-        //     .on('mousemove', nodeMouseOver)
         //     .on('mouseleave', (d) => {
         //         tooltip.text('');
         //     });
@@ -387,6 +358,18 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
             tsneOptions.perplexity = 30;
         }
         initTSNE();
+    }
+
+    function splatter(element, data, userOptions) {
+        const defaultsUrl = 'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter_defaults.json';
+        fetch(defaultsUrl)
+        .then((response) => response.json())
+        .then((defaults) => {
+            console.log({ defaults });
+            defaultOptions = defaults.options;
+            defaultTsneOptions = defaults.tsneOptions;
+            renderNetwork(element, data, userOptions);
+        });
     }
 
     return splatter;
