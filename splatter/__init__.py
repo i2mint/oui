@@ -54,6 +54,10 @@ def splatter(pts,
     options = dict(fillColors=fillColors, fps=fps, height=height, maxIterations=maxIterations, nodeSize=nodeSize,
                    untaggedColor=untaggedColor, width=width, dim=dim, epsilon=epsilon, perplexity=perplexity,
                    spread=spread)
+    return _splatter(pts, options, assert_same_sized_fvs)
+
+
+def _splatter(pts, options, assert_same_sized_fvs=True):
     assert len(pts) > 0, "Your data is empty"
     if assert_same_sized_fvs:
         first_fv_size = len(pts[0].get('fv', []))
