@@ -1,6 +1,6 @@
 require.undef('tsne');
 
-console.log('TSNE!');
+console.log('loaded TSNE');
 
 define('tsne', [], function() {
     // utility function
