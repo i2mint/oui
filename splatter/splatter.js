@@ -6,8 +6,10 @@ require.config({
     }
 });
 
+console.log('loaded splatter v1.1');
+
 define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
-    const fillColors = [
+    const defaultFillColors = [
         '#ff0000', '#00ffe6',
         '#ffc300', '#8c00ff',
         '#ff5500', '#0048ff',
@@ -20,39 +22,51 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         '#a5750d', '#460080',
         '#802b00', '#000680',
         '#1d6600', '#660050'];
-    const height = 200;
-    const width = 200;
 
     const margin = 10;
-    const centerx = d3.scaleLinear()
-        .range([width / 2 - height / 2 + margin, width / 2 + height / 2 - margin]);
-    const centery = d3.scaleLinear()
-        .range([margin, height - margin]);
+    const defaultOptions = {
+        fillColors: defaultFillColors.slice(),
+        fps: 60,
+        height: 200,
+        maxIterations: 240,
+        nodeSize: 1,
+        untaggedColor: '#444',
+        width: 200,
+    };
+    const defaultTsneOptions = {
+        dim: 2,
+        epsilon: 50,
+        initial: 'current',
+        // measure: 'euclidean',
+        perplexity: 30,
+        spread: 10,
+    };
+    let options = Object.assign({}, defaultOptions);
+    let tsneOptions = Object.assign({}, defaultTsneOptions);
+    let svg;
+    let centerx;
+    let centery;
+    let tagColors = {};
     let tagSet = [];
     let iter = 0;
+    let lastFrame = 0;
+    let delay;
     let tsne;
     let nodes;
     let update;
     let paused;
-    const tsneOptions = {
-        dim: 2,
-        epsilon: 50,
-        initial: 'current',
-        measure: 'euclidean',
-        perplexity: 30,
-        spread: 10,
-    };
-    const globalParams = {
-        maxIterations: 240,
-    };
-    let svg;
-    let tagColors = {};
 
     function initializeValues() {
         tagColors = {};
         paused = false;
         iter = 0;
         tagSet = [];
+        delay = 1000 / options.fps;
+        const { width, height } = options;
+        centerx = d3.scaleLinear()
+            .range([width / 2 - height / 2 + margin, width / 2 + height / 2 - margin]);
+        centery = d3.scaleLinear()
+            .range([margin, height - margin]);
     }
 
     function getColor(tag) {
@@ -62,15 +76,15 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
     function getFv(idx, d) {
         return d.fv[idx];
     }
-    function getTransformedFVs(rawNodes, method, scalerScope, params) {
+    function getTransformedFVs(rawNodes, method, scalerScope) {
         function getZScoreTransformation(items) {
             const fvLength = items[0].fv.length;
             let stdArr = [];
             let meanArr = [];
 
-            if (scalerScope === 'global' && params && params.scaler) {
-                stdArr = params.scaler.scale_;
-                meanArr = params.scaler.mean_;
+            if (scalerScope === 'global' && options.scaler) {
+                stdArr = options.scaler.scale_;
+                meanArr = options.scaler.mean_;
             } else {
                 for (let i = 0; i < fvLength; i++) {
                     stdArr[i] = d3.deviation(items, getFv.bind(null, i));
@@ -97,11 +111,11 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
     function initializeDom(element) {
         svg = d3.select(element)
             .append('svg')
-            .attr('height', height)
-            .attr('width', width);
+            .attr('height', options.height)
+            .attr('width', options.width);
             // .attr('shape-rendering', 'optimizeSpeed');
         const nodesGroup = svg.append('g').attr('class', 'nodesGroup')
-            .attr('width', width);
+            .attr('width', options.width);
         const gnodes = nodesGroup.selectAll('.gnode')
             .data(nodes)
             .enter()
@@ -114,14 +128,14 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         const node = gnodes.append('circle')
             .classed('node', true);
 
-        node.attr('fill', '#444')
-            .attr('r', 1);
+        node.attr('fill', options.untaggedColor)
+            .attr('r', options.nodeSize);
 
         return { gnodes, node };
     }
 
     function initTSNE() {
-        const fvs = getTransformedFVs(nodes, 'z-score', 'global', globalParams);
+        const fvs = getTransformedFVs(nodes, 'z-score', 'global', options);
 
         tsne = new TSNE(tsneOptions);
         iter = 0;
@@ -133,6 +147,17 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
     }
 
     function draw() {
+        if (!paused) {
+            window.requestAnimationFrame(draw);
+        } else {
+            console.log('animation finished');
+            return;
+        }
+        const now = Date.now();
+        if (now - lastFrame < delay) {
+            return;
+        }
+        lastFrame = now;
         tsne.step();
         const posnsInner = tsne.getSolution();
         centerx.domain(d3.extent(posnsInner.map((d) => d[0])));
@@ -144,17 +169,15 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         }
         update();
         iter++;
-        if (iter > globalParams.maxIterations) {
+        if (iter > options.maxIterations) {
             paused = true;
-        }
-        if (!paused) {
-            window.requestAnimationFrame(draw);
-        } else {
-            console.log('done!');
         }
     }
 
-    function splatter(element, data) {
+    function splatter(element, data, userOptions) {
+        options = Object.assign({}, defaultOptions, (userOptions || {}));
+        const userTsneOptions = userOptions && userOptions.tsne ? userOptions.tsne : {};
+        tsneOptions = Object.assign({}, defaultTsneOptions, userTsneOptions);
         initializeValues();
         nodes = data;
         const { gnodes, node } = initializeDom(element);
@@ -162,11 +185,11 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].tag && !tagColors[nodes[i].tag]) {
                 tagSet.push(nodes[i].tag);
-                tagColors[nodes[i].tag] = fillColors[tagSet.length - 1];
+                tagColors[nodes[i].tag] = options.fillColors[tagSet.length - 1];
             }
         }
         // node = node;
-        const colorScale = d3.scaleOrdinal().domain(tagSet).range(fillColors);
+        const colorScale = d3.scaleOrdinal().domain(tagSet).range(options.fillColors);
         // const submitQuickTag = submitQuickTag;
 
         let dragEventActive = false;
@@ -341,7 +364,7 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
 
         function updateVis() {
             node.attr('fill', (d) => getColor(d.tag))
-                .attr('r', (d) => d.playing ? 5 : 1) // per June 28 email
+                .attr('r', (d) => d.playing ? 5 : options.nodeSize)
                 .attr('stroke', (d) => d.selected ? 'black' : 'none')
                 .attr('opacity', (d) => d.hidden ? 0.15 : 1);
             gnodes
@@ -350,10 +373,10 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
 
         // nodeLabels.text((d: any) => d.tag);
         node.attr('fill', (d) => '#444')
-            .attr('r', 1) // globalParams.minNodeRadius) //per June 28 email
+            .attr('r', options.nodeSize)
             .attr('stroke', (d) => d.selected ? 'black' : 'none')
             .classed('selected', (d) => d.selected)
-            .attr('transform', 'scale(' + (1 / Math.pow(0.25 /* * zoomBehaviour.scale()*/, 0.5)) + ')');
+            .attr('transform', 'scale(' + (1 / Math.pow(0.25 /* * zoomBehavior.scale()*/, 0.5)) + ')');
 
         update = updateVis;
         if (nodes.length < 60) {
