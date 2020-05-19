@@ -1,0 +1,43 @@
+.chord-chart {
+    display: block;
+    margin: 10px;
+}
+
+.chord-chart circle {
+    fill:none;
+    pointer-events:all;
+}
+
+.chord-chart .fade {
+  opacity:0.2;
+}
+
+.chord-chart > .fadeFill {
+    fill-opacity:0.2;
+}
+
+.chord-chart path {
+    cursor:pointer;
+}
+.chord-chart .chord {
+    fill:#ddd;
+    stroke:#999;
+    fill-opacity:0.8;
+}
+
+.chord-chart .chord.same {
+    fill:#5DBCD2;
+    fill-opacity:0.25;
+}
+
+.chord-chart text {
+    font-size: 26px;
+    font-weight: 600;
+    fill: white;
+}
+
+.model-tooltip {
+    background-color: #ddd;
+    padding: 4px;
+    z-index: 2;
+}

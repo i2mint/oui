@@ -6,7 +6,7 @@ require.config({
     }
 });
 
-console.log('loaded splatter v1.1.1');
+console.log('loaded splatter v1.1.3');
 
 
 define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
@@ -282,11 +282,12 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
             .attr('id', 'TOOLTIPTEST');
 
         function nodeMouseOver(item) {
-            tooltip.attr('y', d3.mouse(svg.node())[1] - 10);
+            const mouse = d3.mouse(svg.node());
+            tooltip.attr('y', mouse[1] - 10);
             tooltip.selectAll('tspan')
                 .data([item.tag ? item.tag : 'untagged'])
                 .attr('dy', (d, i) => i * 15)
-                .attr('x', d3.event.x)
+                .attr('x', mouse[0] + 5)
                 .text((d) => d)
                 .enter()
                 .append('tspan');
@@ -329,9 +330,9 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         //             }, doubleClickThreshold);
         //         }
         //     })
-        //     .on('mouseleave', (d) => {
-        //         tooltip.text('');
-        //     });
+        .on('mouseleave', (d) => {
+            tooltip.text('');
+        });
 
         function updateVis() {
             node.attr('fill', (d) => getColor(d.tag))
@@ -343,7 +344,7 @@ define('splatter', ['d3', 'tsne'], function(d3, TSNE) {
         }
 
         // nodeLabels.text((d: any) => d.tag);
-        node.attr('fill', (d) => '#444')
+        node.attr('fill', (d) => options.untaggedColor)
             .attr('r', options.nodeSize)
             .attr('stroke', (d) => d.selected ? 'black' : 'none')
             .classed('selected', (d) => d.selected)
