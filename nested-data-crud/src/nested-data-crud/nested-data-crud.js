@@ -34,6 +34,16 @@ export default class NestedDataCRUD extends React.Component {
         </div> 
     }
 
+    onEditingCell(e) {
+        if (e.columnName === this.valueField && !!e.rowData[this.childrenField]) {
+            e.cancel = true;
+        }
+    }
+
+    afterEditingCell(e) {
+        this.updateDataSource(this.state.dataSource);
+    }
+
     onOpeningContextMenu(e) {
         const newMenuItemEl = document.getElementById('newMenuItem')
         const displayNewItem = 
@@ -49,16 +59,6 @@ export default class NestedDataCRUD extends React.Component {
         if (!!contextMenuEl && !!contextMenuEl.childNodes && [...(contextMenuEl.childNodes)].every(e => e.classList.contains('e-menu-hide'))) {
             e.cancel = true;
         }
-    }
-
-    onEditingCell(e) {
-        if (e.columnName === this.valueField && !!e.rowData[this.childrenField]) {
-            e.cancel = true;
-        }
-    }
-
-    afterEditingCell(e) {
-        this.updateDataSource(this.state.dataSource);
     }
 
     onSelectingMenuItem(e, fromToolbar = false) {
@@ -238,6 +238,9 @@ export default class NestedDataCRUD extends React.Component {
 NestedDataCRUD.defaultProps = {};
 
 NestedDataCRUD.propTypes = {
+    /**
+     * The ID used to identify this component in Dash callbacks.
+     */
     id: PropTypes.string,
     dataSource: PropTypes.arrayOf(PropTypes.object),
     keyField: PropTypes.string,

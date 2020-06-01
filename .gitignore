@@ -20,3 +20,5 @@ nested-data-crud/npm-debug.log*
 nested-data-crud/yarn-debug.log*
 nested-data-crud/yarn-error.log*
 .vscode/settings.json
+config_crud/dash/config_crud/__pycache__/config_crud.cpython-38.pyc
+config_crud/dash/config_crud/__pycache__/config_store.cpython-38.pyc
