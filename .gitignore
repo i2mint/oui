@@ -1,0 +1,22 @@
+# dependencies
+nested-data-crud/node_modules
+nested-data-crud/.pnp
+nested-data-crud/.pnp.js
+
+# testing
+nested-data-crud/coverage
+
+# production
+nested-data-crud/build
+
+# misc
+nested-data-crud/.DS_Store
+nested-data-crud/.env.local
+nested-data-crud/.env.development.local
+nested-data-crud/.env.test.local
+nested-data-crud/.env.production.local
+
+nested-data-crud/npm-debug.log*
+nested-data-crud/yarn-debug.log*
+nested-data-crud/yarn-error.log*
+.vscode/settings.json
