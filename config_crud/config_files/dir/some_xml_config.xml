@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<some_string>test</some_string>
+	<some_integer>123</some_integer>
+	<some_date>2020-04-07</some_date>
+	<some_boolean>true</some_boolean>
+	<some_section>
+		<some_section_string>test</some_section_string>
+		<some_section_integer>123</some_section_integer>
+		<some_section_date>2020-04-07</some_section_date>
+		<some_section_boolean>true</some_section_boolean>
+		<some_sub_section>
+			<some_sub_section_string>test</some_sub_section_string>
+			<some_sub_section_integer>123</some_sub_section_integer>
+			<some_sub_section_date>2020-04-07</some_sub_section_date>
+			<some_sub_section_boolean>true</some_sub_section_boolean>
+		</some_sub_section>
+	</some_section>
+</root>

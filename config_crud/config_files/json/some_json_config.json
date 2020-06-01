@@ -1,0 +1,18 @@
+{
+  "some_string": "test",
+  "some_integer": 123,
+  "some_date": "2020-04-07",
+  "some_boolean": true,
+  "some_section": {
+    "some_section_string": "test",
+    "some_section_integer": 123,
+    "some_section_date": "2020-04-07",
+    "some_section_boolean": true,
+    "some_sub_section": {
+      "some_sub_section_string": "test",
+      "some_sub_section_integer": 123,
+      "some_sub_section_date": "2020-04-07",
+      "some_sub_section_boolean": true
+    }
+  }
+}

@@ -5,7 +5,7 @@ from config_crud.config_crud import ConfigCRUD
 
 config_crud = ConfigCRUD(
     id='my-config-crud',
-    root_path='../../data/config_files'
+    root_path='../config_files'
 )
 app = dash.Dash(__name__)
 app.layout = config_crud.get_layout
