@@ -18,6 +18,30 @@ What components?
 Some really high level ones (lists, tables, nested data)?
 Some more specific: Hear/view sound, configs CRUD, etc.
 
+# Architectural notes
+
+The following are just suggestions, but follow them unless you have a 
+defendable reason not to. Also, do add/edit these if you have some ideas of your
+own.
+
+One folder per component, with python interface in the `__init__.py` under it. 
+
+If python and js need to share some resources (say settings, defaults, etc.), 
+put these in ONE place (for example a json file) from which both python and js 
+will source these.
+
+Include as many defaults and annotations as possible. We want the components to 
+be used out-of-the-box, and only tuned if and when needed. 
+Defaults can be dumb values, or "smart" 
+(set dynamically according to the context)
+
+Name your values. For example, instead of `24` or `3600` in the code, define
+`HOURS_PER_DAY = 24` and `SECONDS_PER_HOUR = 3600` and use these names. 
+
+Extract as many variables from the code and and perculate them higher in the 
+interface (such as function arguments or module constants). 
+
+
 # Components
 
 Keep in mind: What are our abstract objects and operations that we want the user 
