@@ -1,0 +1,25 @@
+{
+  "name": "otosense-time-vis",
+  "version": "0.0.6",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepack": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chroma-js": "^2.1.0",
+    "lodash": "^4.17.19",
+    "moment": "^2.27.0",
+    "otosense-sound-utils": "0.0.5",
+    "react": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.44",
+    "tslint": "^6.1.3",
+    "tslint-react": "^5.0.0",
+    "typescript": "^3.4.5"
+  }
+}

@@ -3,10 +3,10 @@ from IPython.display import Javascript
 js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/tsne.js',
            'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter.js']
 
-dflt_fill_colors = (
+dflt_fill_colors = [
     '#ff0000', '#00ffe6', '#ffc300', '#8c00ff', '#ff5500', '#0048ff', '#3acc00', '#ff00c8', '#fc8383',
     '#1fad8c', '#bbf53d', '#b96ef7', '#bf6a40', '#0d7cf2', '#6ef777', '#ff6699', '#a30000', '#004d45',
-    '#a5750d', '#460080', '#802b00', '#000680', '#1d6600', '#660050')
+    '#a5750d', '#460080', '#802b00', '#000680', '#1d6600', '#660050']
 
 
 def splatter(pts,
@@ -51,7 +51,7 @@ def splatter(pts,
     :param assert_same_sized_fvs:
     :return:
     """
-    options = dict(fillColors=fillColors, fps=fps, height=height, maxIterations=maxIterations, nodeSize=nodeSize,
+    options = dict({}, fillColors=fillColors, fps=fps, height=height, maxIterations=maxIterations, nodeSize=nodeSize,
                    untaggedColor=untaggedColor, width=width, dim=dim, epsilon=epsilon, perplexity=perplexity,
                    spread=spread)
     return _splatter(pts, options, assert_same_sized_fvs)
