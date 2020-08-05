@@ -3,7 +3,7 @@
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
-**/__pycache__/
+__pycache__/
 *.py[cod]
 *$py.class
 
@@ -28,8 +28,9 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-**/node_modules/
+node_modules/
 *.tgz
+coverage/
 
 
 # PyInstaller
@@ -59,7 +60,7 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
+*.log*
 local_settings.py
 db.sqlite3
 
@@ -91,6 +92,7 @@ celerybeat-schedule
 
 # Environments
 .env
+.env.*
 .venv
 env/
 venv/

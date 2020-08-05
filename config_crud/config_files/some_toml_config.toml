@@ -1,0 +1,11 @@
+[some_section]
+some_string = "test"
+some_integer = 123
+some_date = "2020-04-07"
+some_boolean = true
+
+[other_section]
+some_other_string = "test"
+some_other_integer = 123
+some_other_date = "2020-04-07"
+some_other_boolean = true
