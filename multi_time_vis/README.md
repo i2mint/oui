@@ -95,9 +95,7 @@ Optional keys:
 
 ### Interface `DataPoint` for time series data
 
-Data points must either have:
-* __bt__ and __tt__
-* or __time__ 
+Data points must either have both __bt__ and __tt__, or __time__
 
 * __bt__ Start time in microseconds
 * __tt__ End time in microseconds
@@ -130,3 +128,4 @@ Data points must either have:
 * Add CSS
 * More documentation
 * More shortcuts
+* Examples
