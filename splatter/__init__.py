@@ -19,7 +19,6 @@ js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/tsne.js',
 # @Sig.from_objs('pts', dflts.items(), assert_same_sized_fvs=True)
 # def mysplatter():
 #     pass
-#
 
 
 def _splatter(pts, options, assert_same_sized_fvs=True):
