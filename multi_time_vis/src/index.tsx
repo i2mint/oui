@@ -36,16 +36,3 @@ export function renderTimeChannel(
             subtitle={subtitle}
         />, element);
 }
-
-window['renderTimeChannel'] = renderTimeChannel
-
-// Paste the code below into the minified file after building
-
-// require.undef('otoTimeVis');
-
-// define('otoTimeVis', function() {
-//     function otoTimeVis(element, channel, props) {
-//         window['renderTimeChannel'](element, channel, props);
-//     }
-//     return otoTimeVis;
-// });
