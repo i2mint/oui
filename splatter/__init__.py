@@ -1,8 +1,13 @@
+from functools import partial
+
 from IPython.display import Javascript
 import os
 from i2.signatures import Sig
+from i2.deco import postprocess
 import json
 from collections.abc import Mapping
+from math import sqrt, pi
+from ui_components.color_util import color_hex_from, add_alpha, dec_to_hex
 
 pkg_dir = os.path.dirname(__file__)
 dflt_filename = 'splatter_defaults.json'
@@ -12,6 +17,18 @@ dflts_filepath = pjoin(dflt_filename)
 dflts = json.load(open(dflts_filepath, 'r'))
 splatter_dflts = dict(dflts['options'], **dflts['tsneOptions'])
 
+_splatter_raw_sig = Sig.from_objs('pts', splatter_dflts.items())
+
+
+# splatter_kwargs_dflts = {k: dflts[k] for k in dflts if k not in }
+# _splatter_sig = Sig.from_objs('pts', splatter_dflts.items())
+
+
+def assert_jsonizable(d):
+    _ = json.dumps(d)
+    return True
+
+
 js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/tsne.js',
            'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter.js']
 
@@ -19,19 +36,6 @@ js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/tsne.js',
 # @Sig.from_objs('pts', dflts.items(), assert_same_sized_fvs=True)
 # def mysplatter():
 #     pass
-
-
-def _splatter(pts, options, assert_same_sized_fvs=True):
-    assert len(pts) > 0, "Your data is empty"
-    if assert_same_sized_fvs:
-        first_fv_size = len(pts[0].get('fv', []))
-        assert all(first_fv_size == len(pt.get('fv', [])) for pt in pts), "All 'fv' lists must be of the same size."
-    return Javascript(f"""
-    ((element) => {{
-        console.log('HI!');
-        require(['splatter'], (splatter) => splatter(element.get(0), {pts}, {options}))
-    }})(element);""", lib=js_libs)
-
 
 def process_pts(pts):
     """Get a normalize form for pts.
@@ -68,12 +72,76 @@ def process_pts(pts):
                 yield dict(tag=tag, fv=list(fv))
 
 
-_sig = Sig.from_objs('pts', splatter_dflts.items(), [('assert_same_sized_fvs', True, bool)])
+_max_node_size_ratio = 0.20
+
+
+def ordered_uniks(iterable):
+    """Unique values of iterable in the order they are encountered in arr
+    >>> iterable = [4, 2, 6, 1, 2, 2, 7]
+    >>> ordered_uniks(iterable)
+    [4, 2, 6, 1, 7]
+    """
+    found = set()
+    # Note: (found.add(x) is None) is a trick so that it the expression is always evaluated.
+    return [x for x in iterable if x not in found and found.add(x) is None]
+
+
+def process_viz_args(pts, nodeSize, figsize, fillColors, untaggedColor, alpha=1):
+    n = len(pts)
+    if isinstance(figsize, (int, float)):
+        figsize = (figsize, figsize)
+    height, width = figsize
+
+    dflt_fill_colors = splatter_dflts['fillColors']
+    if fillColors is None:
+        fillColors = dflt_fill_colors
+    elif isinstance(fillColors, Mapping):
+        color_for_tag = fillColors
+        unik_tags = ordered_uniks(filter(None, (x.get('tag', None) for x in pts)))
+        when_not_found_choose_from_here = iter(dflt_fill_colors)
+        fillColors = [color_for_tag.get(tag, False) or next(when_not_found_choose_from_here) for tag in unik_tags]
+
+    if nodeSize < _max_node_size_ratio:  # if smaller than max_node_size_ratio, it's not pixels,
+        # but a desired node coverage ratio (approx ratio of the figure coverage by nodes)
+        # It assumes the (unknown) nodeSize is a the "radius" of a circle so that
+        # node_coverage = n * pi * nodeSize ** 2 / (height * width)
+        # And solves for nodeSize to get desired coverage.
+        node_coverage = nodeSize
+        nodeSize = max(1, sqrt(node_coverage * (height * width) / (pi * n)))
+
+    assert 0 <= alpha <= 1, f"alpha should be between 0 and 1, was {alpha}"
+    fillColors = list(map(color_hex_from, fillColors))
+    untaggedColor = color_hex_from(untaggedColor)
+    if alpha != 1:
+        alpha_hex = dec_to_hex(round(int(alpha * 255)))
+        add_this_alpha = partial(add_alpha, alpha_hex=alpha_hex)
+        fillColors = list(map(add_this_alpha, fillColors))
+        untaggedColor = add_this_alpha(untaggedColor)
+    return pts, nodeSize, figsize, fillColors, untaggedColor
+
+
+# TODO: Wishlist: A decorator to automatically make extra_splatter_kwargs explicit (from dflts)
+def splatter(pts,
+             nodeSize=0.02,
+             figsize=(200, 200),
+             fillColors=None,
+             untaggedColor='#444',
+             alpha=1,
+             process_pts=process_pts,
+             process_viz_args=process_viz_args,
+             **extra_splatter_kwargs):
+    pts = list(process_pts(pts))
+    pts, nodeSize, figsize, fillColors, untaggedColor = process_viz_args(
+        pts, nodeSize, figsize, fillColors, untaggedColor, alpha)
+    height, width = figsize
+    return splatter_raw(pts, nodeSize=nodeSize, height=height, width=width,
+                        fillColors=fillColors, untaggedColor=untaggedColor,
+                        **extra_splatter_kwargs)
 
 
 # TODO: Forward JS errors to python and handle on python side (raising informative error for e.g.)
-@_sig
-def splatter(*args, **kwargs):
+@_splatter_raw_sig
+def splatter_raw(*args, **kwargs):
     """
     Splatter multidimensional pts (that is, see a TSNE iteration happen in front of your eyes,
     squishing your multidimensional pts into two dimensions.
@@ -83,50 +151,82 @@ def splatter(*args, **kwargs):
 
     Optionally, you can include:
     - 'tag': Will be use to categorize and color the point
-    - 'x': initial x-coordinate of the point
-    - 'y': initial y-coordinate of the point
 
-    ... and any other fields, which will be ignored.
-
-    :param pts: Your pts, in the form of a list of dicts, list of lists, or dict of lists
-    :param nodeSize: The size of the displayed points (aka "nodes")
-    :param height: Height of display rectangle
-    :param width: Width of display rectangle
-    :param untaggedColor: Color of an untagged node
+    :param pts: Your pts, in the form of a list of dicts, list of lists, or dict of lists.
+        All forms of data will be converted to a list of dicts where these dicts have four fields
+        (other fields are possible, but are ignored by splatter): `fv` (required), `tag`, `source`, and `bt`.
+        - `fv`: the "feature vector" that is used to computer node simularity/distance
+        - `tag`: used to denote a group/category and map to a color
+        - `source` and `bt`: which together denote the reference of the node element --
+            `source` being an identification of the source of the data, and `bt` identifying (usually) time
+            (or offset, or some addressing of the source stream).
+        ... and any other fields, which will be ignored.
+    :param nodeSize: The size of the displayed points (aka "nodes"), in pixels.
+    :param height: Height of display rectangle, in pixels.
+    :param width: Width of display rectangle, in pixels.
+    :param untaggedColor: Color of an untagged node.
     :param maxIterations: Maximum iterations of the TSNE
     :param fps: Frames per second
-    :param fillColors: List of colors to cycle through, one for every unique tag
-    :param dim: Target dimension of the TSNE
-    :param epsilon:
-    :param perplexity:
-    :param spread:
-    :param assert_same_sized_fvs:
+    :param fillColors: List of colors to cycle through, one for every unique tag.
+        How do `fillColors` and `tags` relate?
+        Splatter iterates through the raw nodes to find unique tags.
+        List of unique tags sorted in order tags were encountered.
+        The mapping is then `..., unik_tag[i] -> fill_color[i], ...`.
+    :param dim: Target dimension of the TSNE.
+        If more than 2, only the first two dimensions are taken into account in the 2d visualization.
+    :param epsilon: TSNE parameter. See https://distill.pub/2016/misread-tsne/
+    :param perplexity: TSNE parameter. See https://distill.pub/2016/misread-tsne/
+    :param spread: TSNE parameter. See https://distill.pub/2016/misread-tsne/
     :return:
     """
-    b = _sig.bind(*args, **kwargs)
-    b.apply_defaults()
-    kwargs = dict(b.arguments)
-    # kwargs['fillColors'] = list(kwargs['fillColors'])
-    kws = dict()
-    kws['pts'] = list(process_pts(kwargs['pts']))
-    kws['assert_same_sized_fvs'] = kwargs.pop('assert_same_sized_fvs')
-    kws['options'] = kwargs  # the remaining is put in here
-    return _splatter(**kws)
+    kwargs = _splatter_raw_sig.extract_kwargs(*args, **kwargs)
+    assert_jsonizable(kwargs)
+    return _splatter(pts=kwargs.pop('pts'), options=kwargs)
+
+
+def assert_pts_are_valid(pts):
+    if not (isinstance(pts, list)  # pts are a list
+            and len(pts) > 0  # with at least one element
+            and isinstance(pts[0], dict)  # it's elements are dicts (at least the first)
+            and 'fv' in pts[0]):  # that have an 'fv' field
+        raise ValueError("pts must be a non-empty list of dicts that have at least an fv field")
+    # All elements have an 'fv' and they are all of the same length
+    first_fv_size = len(pts[0]['fv'])
+    for pt in pts:
+        if 'fv' not in pt:
+            raise ValueError(f"An pt of pts didn't have an 'fv': {pt}")
+        if not isinstance(pt['fv'], list):
+            raise ValueError(f"All fvs of pts must be lists. This one was not: {pt}")
+        if len(pt['fv']) != first_fv_size:
+            raise ValueError(f"All fvs of pts must be of the same size ({first_fv_size}: {pt}")
+    return True
+
+
+# TODO: Forward JS errors to python and handle on python side (raising informative error for e.g.)
+def _splatter(pts, options):
+    assert_pts_are_valid(pts)
+    return Javascript(f"""
+    ((element) => {{
+        console.log('HI!');
+        require(['splatter'], (splatter) => splatter(element.get(0), {pts}, {options}))
+    }})(element);""", lib=js_libs)
 
 
 # Just to note that we can do this with position only args too.
 
-def call(func, kwargs):
+def call_func(func, **kwargs):
     args, kwargs = Sig(func).args_and_kwargs_from_kwargs(kwargs)
     return func(*args, **kwargs)
 
-# dflt_fill_colors = (
-#     '#ff0000', '#00ffe6', '#ffc300', '#8c00ff', '#ff5500', '#0048ff', '#3acc00', '#ff00c8', '#fc8383',
-#     '#1fad8c', '#bbf53d', '#b96ef7', '#bf6a40', '#0d7cf2', '#6ef777', '#ff6699', '#a30000', '#004d45',
-#     '#a5750d', '#460080', '#802b00', '#000680', '#1d6600', '#660050')
 
+def call_func_ignoring_excess(func, **kwargs):
+    """Call func, sourcing the arguments from kwargs and ignoring the excess arguments.
+    Also works if func has some position only arguments.
+    """
+    s = Sig(func)
+    args, kwargs = s.args_and_kwargs_from_kwargs(s.source_kwargs(**kwargs))
+    return func(*args, **kwargs)
 
-# TODO: Forward JS errors to python and handle on python side (raising informative error for e.g.)
 # TODO: Get defaults from splatter_defaults.json and inject in signature
 # def splatter(pts,
 #              nodeSize=1,
@@ -135,7 +235,7 @@ def call(func, kwargs):
 #              untaggedColor: str = '#444',
 #              maxIterations=240,
 #              fps=60,
-#              fillColors=dflt_fill_colors,
+#              fillColors=dflt_fillColors,
 #              dim=2,
 #              epsilon=50,
 #              perplexity=30,
