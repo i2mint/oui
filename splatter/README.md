@@ -177,18 +177,7 @@ splatter(pts)
 
 ## Figsize
 
-
-```python
 Check the following three splaters out.
-```
-
-
-      File "<ipython-input-226-53ed673eeb44>", line 1
-        Check the following three splaters out.
-              ^
-    SyntaxError: invalid syntax
-
-
 
 
 ```python
