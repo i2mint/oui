@@ -373,3 +373,4 @@ export function splatter(renderElement, data, userOptions) {
         renderNetwork(renderElement, data, userOptions);
     });
 }
+window['splatter'] = splatter;

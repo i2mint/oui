@@ -4,8 +4,6 @@ const webpack = require('webpack');
 const sourcePath = path.join(__dirname, './src');
 const outPath = path.join(__dirname, './js');
 
-const TerserPlugin = require('terser-webpack-plugin');
-
 module.exports = {
     mode: 'development',
     context: sourcePath,
@@ -53,17 +51,4 @@ module.exports = {
         },
         publicPath: '/',
     },
-    optimization: {
-        minimize: true,
-        minimizer: [
-            new TerserPlugin({
-                sourceMap: true,
-                terserOptions: {
-                    mangle: {
-                        reserved: ['splatter']
-                    }
-                }
-            })
-        ]
-    }
 };
