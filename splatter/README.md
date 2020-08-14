@@ -282,16 +282,26 @@ splatter(pts, nodeSize=0.2, figsize=150)
 
 # alpha
 
+You can specify the alpha (think "inverse of transparency"). 
+An alpha can be expressed as a number between `0` (invisible) 
+and `1` (not transparent at all). 
 
 ```python
-splatter(pts, nodeSize=0.1, figsize=150, alpha=0.2)  # TODO: Not working
+splatter(pts, nodeSize=0.1, figsize=150, alpha=0.2) 
 ```
 
 
+![image](/uploads/bc640f0f62b29d555ad90c7c3f82b186/image.png)
 
 
-    <IPython.core.display.Javascript object>
+You usually want to apply an alpha when you have a lot of points so that you can 
+see density when they overlap. 
+You can also specify the alpha of individual colors, directly in their hex code, 
+but we'll leave you figure that out. 
+Here, the useful tool is to be able to apply an alpha ratio globally. 
 
+Note: It will only take effect for those colors that don't already have an explicit 
+alpha in their hex code.
 
 
 # Color
@@ -395,30 +405,15 @@ splatter(pts, fillColors=[hc.bisque, hc.blue_violet, hc.dark_khaki])
 
 
 
-You should be able to specify `untaggedColor` too, but that doesn't work.
 
-**(TODO: FIXME!!)**
-
-
-```python
-splatter(pts, fillColors=[hc.bisque, hc.blue_violet, hc.dark_khaki], untaggedColor=hc.crimson)
-```
-
-
-
-
-
-
-If want to map specific tags to specific colors, you can do that by specifying a `{tag: color,...}` map.
+If you want to map specific tags to specific colors, you can do that by specifying a `{tag: color,...}` map.
 
 
 ```python
 splatter(pts, fillColors={'use': hc.pink, 'the': hc.orchid, 'force': hc.gainsboro}, untaggedColor=hc.crimson)
 ```
 
-
-
-![image](/uploads/c46ce18b9f583915edc8d59343c06963/image.png)
+![image](/uploads/288b53efc864ccda25ddfa987e389cab/image.png)
 
 
 
@@ -429,10 +424,22 @@ And that map doesn't have to be completely specified. We'll fill in the gaps wit
 splatter(pts, fillColors={'use': hc.pink}, untaggedColor=hc.crimson)
 ```
 
+![image](/uploads/4fceb776034cfac80d056b0d941f6876/image.png)
 
-![image](/uploads/9f02779d547985ebffcaabf2e886358e/image.png)
 
+You can also specify `untaggedColor` directly in `fillColors` by specifying a 
+color for `''` or `None`. 
+These take precedence over the `untaggedColor` argument.
 
+```python
+splatter(pts, fillColors={
+    'use': hc.pink, 
+    'the': hc.orchid, 
+    'force': hc.gainsboro, 
+    '':hc.crimson})
+```
+
+![image](/uploads/b6c7a06a037ae45a7a932cebe354cf47/image.png)
 
 
 # More
