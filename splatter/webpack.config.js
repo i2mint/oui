@@ -8,15 +8,15 @@ module.exports = {
     mode: 'development',
     context: sourcePath,
     entry: {
-        main: './index.tsx',
+        main: './index.ts',
     },
     output: {
-        library: 'otoTimeVis',
-        libraryExport: 'renderTimeChannel',
+        library: 'splatter',
+        libraryExport: 'splatter',
         libraryTarget: 'amd',
         path: outPath,
         publicPath: '/',
-        filename: 'oto-multi-time-vis-min-v0.0.6b.js',
+        filename: 'oto-splatter-v0.0.1.js',
     },
     target: 'web',
     resolve: {
@@ -43,4 +43,15 @@ module.exports = {
         }],
     },
     plugins: [],
+    devServer: {
+        contentBase: sourcePath,
+        watchContentBase: true,
+        compress: true,
+        hot: true,
+        disableHostCheck: true,
+        stats: {
+            warnings: false,
+        },
+        publicPath: '/',
+    },
 };

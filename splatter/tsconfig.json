@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "target": "es5",
+        "lib": ["dom", "es2015", "es6"],
+        "allowJs": true,
+        "declaration": true,
+        "diagnostics": true,
+        "sourceMap": true,
+        "module": "commonjs",
+        "removeComments": true,
+        "jsx": "react",
+        "baseUrl": "./src",
+        "experimentalDecorators": true,
+        "outDir": "lib",
+        "noUnusedLocals": true,
+        "typeRoots" : ["./node_modules/@types", "./typings"]
+    },
+    "exclude": [
+        "node_modules",
+        "dist",
+        "test",
+    ]
+}

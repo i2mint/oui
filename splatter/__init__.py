@@ -29,8 +29,11 @@ def assert_jsonizable(d):
     return True
 
 
-js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/tsne.js',
-           'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter.js']
+if os.getenv('PROD', None):
+    js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/tsne.js',
+               'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter.js']
+else:
+    js_libs = ['http://localhost:3000/oto-splatter-v0.0.1.js']
 
 
 # @Sig.from_objs('pts', dflts.items(), assert_same_sized_fvs=True)
