@@ -12,6 +12,7 @@
   * [Giving tags color](#giving-tags-color)
 - [More](#more)
 
+
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 # Hello splatters
@@ -456,6 +457,74 @@ splatter(pts, fillColors={
 
 
 # More
+
+## Great color splatters
+
+
+```python
+from ui_components.splatter import splatter
+from ui_components.color_util import color_names_and_codes
+import numpy as np
+
+# splatter(pts, fill_colors=final_df.hex.to_list(), node_size=0.03, figsize=400)
+```
+
+`color_names_and_codes` is a list of color names, hex codes, and dec codes.
+
+Note: they are unique in names, but not in code (some different names for same colors)
+
+
+```python
+print(f"We have {len(color_names_and_codes)} such items")
+color_names_and_codes[35:38]
+
+```
+
+    We have 164 such items
+
+
+
+
+
+    [{'color': 'orange', 'hex': '#FFA500', 'dec': [255, 165, 0]},
+     {'color': 'gold', 'hex': '#FFD700', 'dec': [255, 215, 0]},
+     {'color': 'dark_golden_rod', 'hex': '#B8860B', 'dec': [184, 134, 11]}]
+
+
+
+We will use the RGB values (the `dec` field) as our fvs and the `color` as our tags. Makes sense, right?
+
+You know what else makes sense? To assign the `hex` field (or the tag itself) to be the color for that tag. 
+
+Let's do it!
+
+
+```python
+pts = [{'fv': x['dec'], 'tag': x['color']} for x in color_names_and_codes]
+fillColors = {x['color']: x['hex'] for x in color_names_and_codes}
+splatter(pts, figsize=500, fillColors=fillColors)
+```
+
+![image](/uploads/6ab8d5c89607edc157cc65095691978b/image.png)
+
+
+Note that a good way to get a sense of how our splatter squeezes multi-dimensions into 2 dimensions is to splatter 2 dimensions only. You would think that it would just fix the points in their 2d location.
+
+Now, that would be true if we initiated our points in the 2d location and didn't make the t-SNE parameters too extreme. But since the splatter, by default, initiates the location randomly, it will not converge in it's most stable point, but instead in some other local minimum. 
+
+Try splattering only RG, or RB, or GB of our RGB points
+
+
+```python
+pts = [{'fv': x['dec'][1:], 'tag': x['color']} for x in color_names_and_codes]
+fillColors = {x['color']: x['hex'] for x in color_names_and_codes}
+splatter(pts, figsize=500, fillColors=fillColors)
+```
+![image](/uploads/a0317557c7a4ed832b497988f6d68797/image.png)
+
+
+
+## Splatter args
 
 
 ```python

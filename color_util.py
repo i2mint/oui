@@ -63,8 +63,8 @@ def add_alpha(rgb_hex, alpha_hex, replace_existing_alpha=False):
         return rgb_hex + alpha_hex
 
 
-_color_names_and_codes = get_pkg_data('color_names_and_codes.json')
-hex_for_color = {x['color']: x['hex'] for x in _color_names_and_codes}
+color_names_and_codes = get_pkg_data('color_names_and_codes.json')
+hex_for_color = {x['color']: x['hex'] for x in color_names_and_codes}
 
 
 def dec_to_hex(dec):
