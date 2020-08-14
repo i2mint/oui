@@ -1,5 +1,4 @@
 from functools import partial
-
 from IPython.display import HTML, Javascript
 import os
 from i2.signatures import Sig
@@ -211,9 +210,10 @@ def _splatter(pts, options):
     if not options:
         options = {}
     js_target = os.path.join(os.path.dirname(__file__), 'js', 'splatter.js')
-    display(HTML(f"<div id='splatter_input' data-input='{json.dumps(pts)}' "
-                 f"data-options='{json.dumps(options)}'></div>"))
-    return Javascript(filename=js_target)
+    with open(js_target) as js_file:
+        js_source = js_file.read()
+        js_source += f'splatter(element.get(0), {str(pts)}, {str(options)})'
+    return Javascript(js_source)
 
 
 # Just to note that we can do this with position only args too.

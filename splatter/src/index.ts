@@ -362,7 +362,7 @@ function renderNetwork(element, data, userOptions) {
     initTSNE();
 }
 
-export function splatter(element, data, userOptions) {
+export function splatter(renderElement, data, userOptions) {
     console.log('splattering a fourth time');
     const defaultsUrl = 'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter_defaults.json';
     fetch(defaultsUrl)
@@ -370,17 +370,6 @@ export function splatter(element, data, userOptions) {
     .then((defaults) => {
         defaultOptions = defaults.options;
         defaultTsneOptions = defaults.tsneOptions;
-        renderNetwork(element, data, userOptions);
+        renderNetwork(renderElement, data, userOptions);
     });
 }
-
-const inputElement: HTMLElement = document.getElementById('splatter_input');
-if (!inputElement) {
-    throw new Error('Missing HTML element splatter_input');
-}
-const inputString: string = inputElement.getAttribute('data-input');
-const optionsString: string = inputElement.getAttribute('data-options');
-console.log({ inputString, optionsString });
-const inputData: any[] = JSON.parse(inputString);
-const inputOptions: any = JSON.parse(optionsString);
-splatter(inputElement, inputData, inputOptions);
