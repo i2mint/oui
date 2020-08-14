@@ -363,7 +363,7 @@ function renderNetwork(element, data, userOptions) {
 }
 
 export function splatter(element, data, userOptions) {
-    console.log('splattering a third time');
+    console.log('splattering a fourth time');
     const defaultsUrl = 'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter_defaults.json';
     fetch(defaultsUrl)
     .then((response) => response.json())
@@ -373,3 +373,14 @@ export function splatter(element, data, userOptions) {
         renderNetwork(element, data, userOptions);
     });
 }
+
+const inputElement: HTMLElement = document.getElementById('splatter_input');
+if (!inputElement) {
+    throw new Error('Missing HTML element splatter_input');
+}
+const inputString: string = inputElement.getAttribute('data-input');
+const optionsString: string = inputElement.getAttribute('data-options');
+console.log({ inputString, optionsString });
+const inputData: any[] = JSON.parse(inputString);
+const inputOptions: any = JSON.parse(optionsString);
+splatter(inputElement, inputData, inputOptions);

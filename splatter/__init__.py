@@ -1,6 +1,6 @@
 from functools import partial
 
-from IPython.display import Javascript
+from IPython.display import HTML, Javascript
 import os
 from i2.signatures import Sig
 from i2.deco import postprocess
@@ -208,12 +208,12 @@ def assert_pts_are_valid(pts):
 # TODO: Forward JS errors to python and handle on python side (raising informative error for e.g.)
 def _splatter(pts, options):
     assert_pts_are_valid(pts)
-    return Javascript(f"""
-    ((element) => {{
-        require(['splatter'], (splatter) => {{
-            splatter(element.get(0), {pts}, {options});
-        }});
-    }})(element);""", lib=js_libs)
+    if not options:
+        options = {}
+    js_target = os.path.join(os.path.dirname(__file__), 'js', 'splatter.js')
+    display(HTML(f"<div id='splatter_input' data-input='{json.dumps(pts)}' "
+                 f"data-options='{json.dumps(options)}'></div>"))
+    return Javascript(filename=js_target)
 
 
 # Just to note that we can do this with position only args too.

@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const sourcePath = path.join(__dirname, './src');
-const outPath = path.join(__dirname, './dist');
+const outPath = path.join(__dirname, './js');
 
 module.exports = {
     mode: 'development',
@@ -11,12 +11,9 @@ module.exports = {
         main: './index.ts',
     },
     output: {
-        library: 'splatter',
-        libraryExport: 'splatter',
-        libraryTarget: 'amd',
         path: outPath,
         publicPath: '/',
-        filename: 'splatter-v1-min.js',
+        filename: 'splatter.js',
     },
     target: 'web',
     resolve: {
