@@ -47,9 +47,7 @@ pts = [
 splatter_raw(pts)
 ```
 
-
-
-    <IPython.core.display.Javascript object>
+![image](/uploads/7353f280cca416f988c98c4be26f65bd/image.png)
 
 
 
