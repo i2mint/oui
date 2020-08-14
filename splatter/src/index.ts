@@ -43,7 +43,7 @@ function initializeValues() {
 }
 
 function getColor(tag) {
-    return tagColors[tag];
+    return tagColors[tag] || options.untaggedColor;
 }
 
 function getFv(idx, d) {
@@ -363,11 +363,11 @@ function renderNetwork(element, data, userOptions) {
 }
 
 export function splatter(element, data, userOptions) {
+    console.log('splattering a third time');
     const defaultsUrl = 'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter_defaults.json';
     fetch(defaultsUrl)
     .then((response) => response.json())
     .then((defaults) => {
-        console.log({ defaults });
         defaultOptions = defaults.options;
         defaultTsneOptions = defaults.tsneOptions;
         renderNetwork(element, data, userOptions);

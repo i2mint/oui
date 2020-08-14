@@ -16,7 +16,7 @@ module.exports = {
         libraryTarget: 'amd',
         path: outPath,
         publicPath: '/',
-        filename: 'oto-splatter-v0.0.1.js',
+        filename: 'splatter-v1-min.js',
     },
     target: 'web',
     resolve: {
@@ -47,7 +47,7 @@ module.exports = {
         contentBase: sourcePath,
         watchContentBase: true,
         compress: true,
-        hot: true,
+        hot: false,
         disableHostCheck: true,
         stats: {
             warnings: false,
