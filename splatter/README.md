@@ -1,5 +1,18 @@
-<h1>Table of Contents<span class="tocSkip"></span></h1>
-<div class="toc"><ul class="toc-item"><li><span><a href="#Hello-splatters" data-toc-modified-id="Hello-splatters-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Hello splatters</a></span><ul class="toc-item"><li><span><a href="#splatter_raw" data-toc-modified-id="splatter_raw-1.1"><span class="toc-item-num">1.1&nbsp;&nbsp;</span>splatter_raw</a></span></li></ul></li><li><span><a href="#splatter:-An-interface-that-does-more-for-you" data-toc-modified-id="splatter:-An-interface-that-does-more-for-you-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>splatter: An interface that does more for you</a></span><ul class="toc-item"><li><span><a href="#More-data-input-formats" data-toc-modified-id="More-data-input-formats-2.1"><span class="toc-item-num">2.1&nbsp;&nbsp;</span>More data input formats</a></span></li><li><span><a href="#Lists-of-lists" data-toc-modified-id="Lists-of-lists-2.2"><span class="toc-item-num">2.2&nbsp;&nbsp;</span>Lists of lists</a></span></li><li><span><a href="#tagged-lists" data-toc-modified-id="tagged-lists-2.3"><span class="toc-item-num">2.3&nbsp;&nbsp;</span>tagged lists</a></span></li><li><span><a href="#Figsize" data-toc-modified-id="Figsize-2.4"><span class="toc-item-num">2.4&nbsp;&nbsp;</span>Figsize</a></span></li></ul></li><li><span><a href="#nodeSize" data-toc-modified-id="nodeSize-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>nodeSize</a></span></li><li><span><a href="#alpha" data-toc-modified-id="alpha-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>alpha</a></span></li><li><span><a href="#Color" data-toc-modified-id="Color-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Color</a></span><ul class="toc-item"><li><span><a href="#Specifying-color" data-toc-modified-id="Specifying-color-5.1"><span class="toc-item-num">5.1&nbsp;&nbsp;</span>Specifying color</a></span></li><li><span><a href="#Giving-tags-color" data-toc-modified-id="Giving-tags-color-5.2"><span class="toc-item-num">5.2&nbsp;&nbsp;</span>Giving tags color</a></span></li></ul></li><li><span><a href="#More" data-toc-modified-id="More-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>More</a></span></li></ul></div>
+- [Hello splatters](#hello-splatters)
+  * [splatter_raw](#splatter-raw)
+- [splatter: An interface that does more for you](#splatter--an-interface-that-does-more-for-you)
+  * [More data input formats](#more-data-input-formats)
+  * [Lists of lists](#lists-of-lists)
+  * [tagged lists](#tagged-lists)
+  * [Figsize](#figsize)
+- [nodeSize](#nodesize)
+- [alpha](#alpha)
+- [Color](#color)
+  * [Specifying color](#specifying-color)
+  * [Giving tags color](#giving-tags-color)
+- [More](#more)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 # Hello splatters
 
@@ -494,31 +507,3 @@ print(splatter_raw.__doc__)
 ```
 
 
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
