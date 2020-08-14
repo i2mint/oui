@@ -12,7 +12,7 @@
         "jsx": "react",
         "baseUrl": "./src",
         "experimentalDecorators": true,
-        "outDir": "dist",
+        "outDir": "lib",
         "noUnusedLocals": true,
         "typeRoots" : ["./node_modules/@types", "./typings"]
     },

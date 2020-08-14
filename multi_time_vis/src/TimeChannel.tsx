@@ -52,7 +52,7 @@ export interface DataChannel {
     closable?: boolean;
     data: DataPoint[];
     filterParams?: any;
-    filters?: Array<(filterParams: any, data: DataPoint[]) => DataPoint[]>;
+    filters?: ((filterParams: any, data: DataPoint[]) => DataPoint[])[];
     getColor?: (value: any) => string;
     hash?: string;
     image?: string;
