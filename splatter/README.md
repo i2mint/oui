@@ -26,7 +26,6 @@ splatter_raw(pts)
 
 
 
-
     <IPython.core.display.Javascript object>
 
 
