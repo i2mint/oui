@@ -5,7 +5,30 @@
 
 A splatter is way to visualize and interact with multi-dimensional, possibly tagged, data. 
 
-For those who like fancy-pants terms, know that it's a t-distributed stochastic neighbor embedding (t-SNE) happening in front of your eyes. 
+For those who like fancy-pants terms, know that it's a t-distributed stochastic 
+neighbor embedding (t-SNE) happening in front of your eyes. 
+
+
+Highlights:
+
+You can splatter:
+- a list of dicts (must have an 'fv', and optionally a 'tag')
+- a `[fv,...]` list of fvs (themselves lists)
+- a `{tag: fv_list, ...}` mapping
+
+You can specify color
+- with hex codes
+- with a list of color names and short-hands
+- specify colors to pick from
+- specify a `{tag: color, ...}` mapping
+
+You can specify size
+- figsize, as `(height, weight)` or just one number (`height=weight`). Unit is pixels.
+- nodeSize, as pixels (of radius of circle) or as proportion of the figure all the points should cover
+
+You can also specify parameters of the t-SNE algorithm itself. 
+For help and experimentation on how to do that, here's a 
+[nice resource](https://distill.pub/2016/misread-tsne/).
 
 ## splatter_raw
 
@@ -24,10 +47,7 @@ pts = [
 splatter_raw(pts)
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
+![image](/uploads/7353f280cca416f988c98c4be26f65bd/image.png)
 
 
 
@@ -234,9 +254,7 @@ splatter(pts, nodeSize=0.06, figsize=250)
 ```
 
 
-
-
-    <IPython.core.display.Javascript object>
+![image](/uploads/53420f2215a2ab35b1fbd48017545402/image.png)
 
 
 
@@ -247,10 +265,8 @@ But know that you can still use `nodeSize` in the pixels unit as JS does. `splat
 splatter(pts, nodeSize=0.19, figsize=150)
 ```
 
+![image](/uploads/5412ede0a9bea59c14b9e1266a5813d8/image.png)
 
-
-
-    <IPython.core.display.Javascript object>
 
 
 
@@ -260,16 +276,9 @@ splatter(pts, nodeSize=0.2, figsize=150)
 ```
 
 
+![image](/uploads/0d5be1725c92af9680490ff34f2399a2/image.png)
 
 
-    <IPython.core.display.Javascript object>
-
-
-
-
-```python
-
-```
 
 # alpha
 
@@ -372,9 +381,7 @@ splatter(pts)
 ```
 
 
-
-
-    <IPython.core.display.Javascript object>
+![image](/uploads/46a8a24338b7c83008a679d1ad197e35/image.png)
 
 
 
@@ -384,9 +391,7 @@ splatter(pts, fillColors=[hc.bisque, hc.blue_violet, hc.dark_khaki])
 ```
 
 
-
-
-    <IPython.core.display.Javascript object>
+![image](/uploads/c443ddd53ab2823b22832d3368ceda20/image.png)
 
 
 
@@ -402,8 +407,6 @@ splatter(pts, fillColors=[hc.bisque, hc.blue_violet, hc.dark_khaki], untaggedCol
 
 
 
-    <IPython.core.display.Javascript object>
-
 
 
 If want to map specific tags to specific colors, you can do that by specifying a `{tag: color,...}` map.
@@ -415,8 +418,7 @@ splatter(pts, fillColors={'use': hc.pink, 'the': hc.orchid, 'force': hc.gainsbor
 
 
 
-
-    <IPython.core.display.Javascript object>
+![image](/uploads/c46ce18b9f583915edc8d59343c06963/image.png)
 
 
 
@@ -428,31 +430,10 @@ splatter(pts, fillColors={'use': hc.pink}, untaggedColor=hc.crimson)
 ```
 
 
-
-
-    <IPython.core.display.Javascript object>
-
+![image](/uploads/9f02779d547985ebffcaabf2e886358e/image.png)
 
 
 
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
 
 # More
 
