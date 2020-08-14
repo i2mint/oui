@@ -5,7 +5,30 @@
 
 A splatter is way to visualize and interact with multi-dimensional, possibly tagged, data. 
 
-For those who like fancy-pants terms, know that it's a t-distributed stochastic neighbor embedding (t-SNE) happening in front of your eyes. 
+For those who like fancy-pants terms, know that it's a t-distributed stochastic 
+neighbor embedding (t-SNE) happening in front of your eyes. 
+
+
+Highlights:
+
+You can splatter:
+- a list of dicts (must have an 'fv', and optionally a 'tag')
+- a `[fv,...]` list of fvs (themselves lists)
+- a `{tag: fv_list, ...}` mapping
+
+You can specify color
+- with hex codes
+- with a list of color names and short-hands
+- specify colors to pick from
+- specify a `{tag: color, ...}` mapping
+
+You can specify size
+- figsize, as `(height, weight)` or just one number (`height=weight`). Unit is pixels.
+- nodeSize, as pixels (of radius of circle) or as proportion of the figure all the points should cover
+
+You can also specify parameters of the t-SNE algorithm itself. 
+For help and experimentation on how to do that, here's a 
+[nice resource](https://distill.pub/2016/misread-tsne/).
 
 ## splatter_raw
 
