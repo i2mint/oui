@@ -11,9 +11,11 @@
   * [Specifying color](#specifying-color)
   * [Giving tags color](#giving-tags-color)
 - [More](#more)
-
+  * [Great color splatters](#great-color-splatters)
+  * [Splatter args](#splatter-args)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 # Hello splatters
 
