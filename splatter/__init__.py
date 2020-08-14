@@ -103,6 +103,12 @@ def process_viz_args(pts, nodeSize, figsize, fillColors, untaggedColor, alpha=1)
         when_not_found_choose_from_here = iter(dflt_fill_colors)
         fillColors = [color_for_tag.get(tag, False) or next(when_not_found_choose_from_here) for tag in unik_tags]
 
+        # If '' and None was mentioned in color_for_tag, the user wants to specify untaggedColor
+        if '' in color_for_tag:
+            untaggedColor = color_for_tag['']
+        elif None in color_for_tag:
+            untaggedColor = color_for_tag[None]
+
     if nodeSize < _max_node_size_ratio:  # if smaller than max_node_size_ratio, it's not pixels,
         # but a desired node coverage ratio (approx ratio of the figure coverage by nodes)
         # It assumes the (unknown) nodeSize is a the "radius" of a circle so that
