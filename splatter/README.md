@@ -484,14 +484,11 @@ color_names_and_codes[35:38]
 
     We have 164 such items
 
-
-
-
-
+```
     [{'color': 'orange', 'hex': '#FFA500', 'dec': [255, 165, 0]},
      {'color': 'gold', 'hex': '#FFD700', 'dec': [255, 215, 0]},
      {'color': 'dark_golden_rod', 'hex': '#B8860B', 'dec': [184, 134, 11]}]
-
+```
 
 
 We will use the RGB values (the `dec` field) as our fvs and the `color` as our tags. Makes sense, right?
@@ -507,7 +504,7 @@ fillColors = {x['color']: x['hex'] for x in color_names_and_codes}
 splatter(pts, figsize=500, fillColors=fillColors)
 ```
 
-![image](/uploads/6ab8d5c89607edc157cc65095691978b/image.png)
+![image](/uploads/dd935fd12d4996045cf4d89fd3886552/image.png)
 
 
 Note that a good way to get a sense of how our splatter squeezes multi-dimensions into 2 dimensions is to splatter 2 dimensions only. You would think that it would just fix the points in their 2d location.
@@ -522,7 +519,7 @@ pts = [{'fv': x['dec'][1:], 'tag': x['color']} for x in color_names_and_codes]
 fillColors = {x['color']: x['hex'] for x in color_names_and_codes}
 splatter(pts, figsize=500, fillColors=fillColors)
 ```
-![image](/uploads/a0317557c7a4ed832b497988f6d68797/image.png)
+![image](/uploads/c0d2474992be4463f224b58ee0aeca72/image.png)
 
 
 
