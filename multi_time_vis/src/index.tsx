@@ -36,3 +36,5 @@ export function renderTimeChannel(
             subtitle={subtitle}
         />, element);
 }
+
+window['renderTimeChannel'] = renderTimeChannel;

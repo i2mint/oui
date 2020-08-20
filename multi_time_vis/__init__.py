@@ -1,6 +1,5 @@
 from IPython.display import Javascript
-
-js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/oto-multi-time-vis-min-v0.0.6b.js']
+import os
 
 CHANNEL_TYPES = ['audio', 'data']
 
@@ -69,11 +68,8 @@ def time_vis(channels):
 
 
 def _single_time_vis(channel, props):
-    js_code = f"""
-    ((element) => {{
-        require(['otoTimeVis'], (otoTimeVis) => otoTimeVis(
-        element.get(0),
-        {channel},
-        {props}))
-    }})(element);""".replace('True', 'true').replace('None', 'null')
-    return Javascript(js_code, lib=js_libs)
+    js_target = os.path.join(os.path.dirname(__file__), 'js', 'time-vis.js')
+    with open(js_target) as js_file:
+        js_source = js_file.read()
+        js_source += f'renderTimeChannel(element.get(0), {channel}, {props})'.replace('True', 'true').replace('None', 'null')
+    return Javascript(js_source)

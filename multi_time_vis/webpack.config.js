@@ -11,12 +11,9 @@ module.exports = {
         main: './index.tsx',
     },
     output: {
-        library: 'otoTimeVis',
-        libraryExport: 'renderTimeChannel',
-        libraryTarget: 'amd',
         path: outPath,
         publicPath: '/',
-        filename: 'oto-multi-time-vis-min-v0.0.6b.js',
+        filename: 'time-vis.js',
     },
     target: 'web',
     resolve: {
@@ -43,4 +40,15 @@ module.exports = {
         }],
     },
     plugins: [],
+    devServer: {
+        contentBase: sourcePath,
+        watchContentBase: true,
+        compress: true,
+        hot: false,
+        disableHostCheck: true,
+        stats: {
+            warnings: false,
+        },
+        publicPath: '/',
+    },
 };
