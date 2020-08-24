@@ -111,16 +111,17 @@ Data points must either have both __bt__ and __tt__, or __time__
 
 ## CSS classes
 
-* __time-channel__ The outermost container of TimeChannel
-* __channel-title__ The title displayed above the chart
-* __canvas-container__ A div wrapping the visualization image
-    * __data__ Additional class applied to data channels
-    * __audio__ Additional class applied to audio channels
-* __overlay-selections__ The overlay container
-* __selection__ The individual overlay items
-    * __annotation-highlight__ Highlighted items
-* __indicator__ The current position indicator for audio playback
-* __time-vis-tooltip__ The tooltip for data channels
+* __otv--vis-channel__ The outermost container of TimeChannel
+* __otv--channel-title__ The title displayed above the chart
+* __otv--canvas-container__ A div wrapping the visualization image
+    * __otv--data__ Additional class applied to data channels
+    * __otv--audio__ Additional class applied to audio channels
+* __otv--overlay-selections__ The overlay container
+* __otv--selection__ The individual overlay items
+    * __otv--annotation-highlight__ Highlighted items
+* __otv--indicator__ The current position indicator for audio playback
+* __otv--tooltip__ The tooltip for data channels
+
 
 ## TODO
 

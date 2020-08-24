@@ -6,6 +6,9 @@ const outPath = path.join(__dirname, './js');
 
 module.exports = {
     mode: 'development',
+    optimization: {
+        minimize: false,
+    },
     context: sourcePath,
     entry: {
         main: './index.tsx',
@@ -31,9 +34,9 @@ module.exports = {
         // }, {
             test: /\.tsx?$/,
             use: ['awesome-typescript-loader'],
-        // }, {
-        //     test: /\.s?css$/,
-        //     use: ['style-loader', 'css-loader', 'sass-loader'],
+        }, {
+            test: /\.s?css$/,
+            use: ['style-loader', 'css-loader', 'sass-loader'],
         // }, {
         //     test: /\.json$/,
         //     loader: 'json-loader',

@@ -13,11 +13,13 @@ export * from './TimeAxis';
 
 export * from './processing';
 
+import './style.scss';
+
 export function renderTimeChannel(
     element: HTMLElement,
     channel: any,
     props: any) {
-    console.log('loaded OtoSense time visualization v0.0.6b');
+    console.log('loaded OtoSense time visualization v0.0.7a');
     const { bt, tt, chart_type, enable_playback, height, params, title, subtitle } = props;
     if (channel && channel.buffer) {
         channel.buffer = new Int16Array(channel.buffer);
@@ -34,6 +36,7 @@ export function renderTimeChannel(
             params={chartParams}
             title={title}
             subtitle={subtitle}
+            suppressPlayOnSpace
         />, element);
 }
 

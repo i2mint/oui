@@ -9,7 +9,7 @@ import {
     createWinnersChart,
     drawSpectrogram,
     drawWaveform,
-    DEFAULT_CHUNK_SIZE_MS,
+    DEFAULT_CHUNK_SIZE_MCS,
     DEFAULT_WINDOW_SIZE,
 } from './processing';
 import { SelectedRange, Timerange } from './MultiTimeVis';
@@ -38,6 +38,8 @@ export interface AudioChannel {
     from?: number;
     image?: string;
     onClose?: () => void;
+    subtitle?: string;
+    title?: string;
     to?: number;
     type: 'audio';
     url?: string;
@@ -53,11 +55,15 @@ export interface DataChannel {
     data: DataPoint[];
     filterParams?: any;
     filters?: ((filterParams: any, data: DataPoint[]) => DataPoint[])[];
+    from?: number;
     getColor?: (value: any) => string;
     hash?: string;
     image?: string;
     onClose?: () => void;
     renderTooltip?: (bt: number) => JSX.Element;
+    subtitle?: string;
+    title?: string;
+    to?: number;
     type: 'data';
     [fieldName: string]: any;
 }
@@ -68,8 +74,12 @@ export interface WinnersChannel {
     closable?: boolean;
     color?: string;
     data: WinnerDataPoint[];
+    from?: number;
     image?: string;
     onClose?: () => void;
+    subtitle?: string;
+    title?: string;
+    to?: number;
     type: 'data';
     [fieldName: string]: any;
 }
@@ -118,6 +128,7 @@ interface IProps extends RequiredProps {
     suppressAudio?: boolean;
     suppressDrawing?: boolean;
     suppressEvents?: boolean;
+    suppressPlayOnSpace?: boolean;
     title?: string;
     // thresholdHandler?: (channel: DataChannel, y: number, event: any) => void;
     zoomHandler?: (e: any) => void;
@@ -132,7 +143,7 @@ interface IState {
     tooltipY: number;
 }
 
-export default class TimeChannel extends React.Component<IProps, IState> {
+export default class TimeChannel extends React.Component<IProps, Partial<IState>> {
     canvas: any;
     container: any;
     soundUtils: SoundUtility;
@@ -148,6 +159,8 @@ export default class TimeChannel extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             hoverY: null,
+            image: '',
+            indicatorX: 0,
             tooltipItem: null,
             tooltipX: null,
             tooltipY: null,
@@ -165,7 +178,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
             this.createImage(this.props);
         }
 
-        if (this.props.enablePlayback) {
+        if (this.props.enablePlayback && !this.props.suppressPlayOnSpace) {
             window.addEventListener('keydown', this.togglePlaybackOnKeydown);
         }
     }
@@ -226,7 +239,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
         }
         const channel: AudioChannel = props.channel as AudioChannel;
         if (channel.chartType === 'spectrogram') {
-            let promise: Promise<[any[], AudioBuffer]>; 
+            let promise: Promise<[any[], AudioBuffer]>;
             if (channel.buffer) {
                 promise = this.soundUtils.getSpectrogramTransformAndAudioBuffer(channel.buffer, true);
             } else if (channel.url) {
@@ -258,15 +271,16 @@ export default class TimeChannel extends React.Component<IProps, IState> {
 
     createImage: (props: IProps) => void = (props: IProps) => {
         const chunkSize: number = this.props.params ? this.props.params.chunkSize :
-            DEFAULT_CHUNK_SIZE_MS;
+            DEFAULT_CHUNK_SIZE_MCS;
         const chartType: string = props.channel.chartType || props.chartType;
-        let image: string;
+        let image: string = '';
         switch (chartType) {
             case 'audio':
             case 'spectrogram':
             case 'peaks':
                 if (props.channel.image) {
                     image = props.channel.image;
+                    break;
                 } else {
                     return this.createAudioImage(props);
                 }
@@ -278,11 +292,15 @@ export default class TimeChannel extends React.Component<IProps, IState> {
                     chunkSize);
                 break;
             case 'winners':
-                image = createWinnersChart(
-                    props.channel as WinnersChannel,
-                    props.from,
-                    props.to,
-                    chunkSize);
+                const channel: WinnersChannel = props.channel as WinnersChannel;
+                if (channel.categories.length) {
+                    image = createWinnersChart(
+                        props.channel as WinnersChannel,
+                        props.from,
+                        props.to,
+                        props.height / channel.categories.length,
+                        chunkSize);
+                }
                 break;
             case 'bargraph':
             default:
@@ -329,10 +347,13 @@ export default class TimeChannel extends React.Component<IProps, IState> {
     }
 
     playbackOnDoubleClick: (event: MouseEvent) => void = (event: MouseEvent) => {
+        event.preventDefault();
+        if (this._playing) {
+            this.stopPlayback();
+        }
         const rect: ClientRect = this.container.getBoundingClientRect();
         const eventLeftPx: number = event.pageX - rect.left;
         const ratio: number = eventLeftPx / rect.width;
-        event.preventDefault();
         this.setState({ indicatorX: ratio }, this.startPlaybackFromIndicator);
     }
 
@@ -354,7 +375,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
             if (this._playing) {
                 this.stopPlayback();
                 this.stopIndicator();
-            } else {
+            } else if (!this.props.suppressPlayOnSpace) {
                 this.startPlaybackFromIndicator();
             }
         }
@@ -398,7 +419,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
         if (this.props.enablePlayback) {
             handlers.onClick = this.setIndicatorOnClick;
             handlers.onDoubleClick = this.playbackOnDoubleClick;
-        } else { 
+        } else {
             if (this.props.clickHandler) {
                 handlers.onClick = this.props.clickHandler;
             }
@@ -486,7 +507,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
         const zoomedIndicatorRatio: number = (this.indicatorX - this.leftX) / zoomedViewRatio;
         return (
             <div
-                className="indicator"
+                className="otv--indicator"
                 style={{
                     left: zoomedIndicatorRatio * 100 + '%',
                 }}
@@ -498,7 +519,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
         if (this.props.renderCloseButton) {
             return this.props.renderCloseButton();
         }
-        return <button className="close-button" onClick={this.props.channel.onClose}>X</button>
+        return <button className="otv--lose-button" onClick={this.props.channel.onClose}>X</button>
     }
 
     get leftX(): number {
@@ -514,7 +535,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
     }
 
     render() {
-        const { channel } = this.props;
+        const channel: DataChannel | AudioChannel | WinnersChannel = this.props.channel;
         if (!channel) {
             return <div />;
         }
@@ -544,16 +565,18 @@ export default class TimeChannel extends React.Component<IProps, IState> {
         const title: string = this.props.title || channel.title || '';
         const subtitle: string = this.props.subtitle || channel.subtitle || '';
         return (
-            <div className="time-channel">
-                <div className="channel-title">
-                    {!!title && <div><strong>{title}</strong></div>}
-                    {!!subtitle && <div className="subtitle">{subtitle}</div>}
-                    {!!this.props.controlContainer && this.props.controlContainer}
-                    {!!this.props.menu && this.props.menu}
-                    {channel.closable && this.renderCloseButton()}
-                </div>
+            <div className="otv--vis-channel">
+                {!!title || !!subtitle || !!this.props.controlContainer || !!this.props.menu || channel.closable &&
+                    <div className="otv--channel-title">
+                        {!!title && <div className="otv--title"><strong>{title}</strong></div>}
+                        {!!subtitle && <div className="otv--subtitle">{subtitle}</div>}
+                        {!!this.props.controlContainer && this.props.controlContainer}
+                        {!!this.props.menu && this.props.menu}
+                        {channel.closable && this.renderCloseButton()}
+                    </div>
+                }
                 <div
-                    className={'canvas-container ' + this.props.channel.type}
+                    className={`otv--canvas-container  otv--${this.props.channel.type}`}
                     {...this.getCanvasEventHandlers()}
                     id={title + '_cont'}
                     ref={this.assignContainerRef}
@@ -565,10 +588,13 @@ export default class TimeChannel extends React.Component<IProps, IState> {
                 >
                     {!!image &&
                         <img
+                            alt={`${title} visualization`}
+                            className="otv--vis-image"
                             draggable={false}
                             id={this.props.channel.title + '_image'}
                             src={image}
                             style={{
+                                height: `${height}px`,
                                 imageRendering: this.props.channel.type === 'audio' ? 'crisp-edges' : 'pixelated',
                                 left: channelLeft,
                                 userSelect: 'none',
@@ -589,12 +615,12 @@ export default class TimeChannel extends React.Component<IProps, IState> {
                         />
                     */}
                     {!image && !!this.props.renderProgress && this.props.renderProgress()}
-                    <div className="overlay-selections">
+                    <div className="otv--overlay-selections">
                         {_.map(this.props.selections, this.renderSelection)}
                         {_.map(this.props.annotations, this.renderSelection)}
                     </div>
                     {!!this.props.activeSelection &&
-                        <div className="overlay-selections">
+                        <div className="otv--overlay-selections">
                             <div
                                 style={{
                                     color: '#000',
@@ -603,15 +629,15 @@ export default class TimeChannel extends React.Component<IProps, IState> {
                                     width: `${Math.abs(this.props.activeSelection.to -
                                         this.props.activeSelection.from) * 100}%`,
                                 }}
-                                className={`selection highlighted ${this.props.negativeRange ? 'negativeRange' : ''}`}
+                                className={`otv--selection otv--highlighted ${this.props.negativeRange ? 'otv--negative-range' : ''}`}
                             />
                         </div>
                     }
                     {displayIndicator && this.renderIndicator()}
                     {this.props.channel.chartType === 'winners' &&
-                        <div className="winners-labels">
+                        <div className="otv--winners-labels">
                             {_.map((this.props.channel as WinnersChannel).categories, (category: string) => (
-                                <div key={category} className="category">
+                                <div key={category} className="otv--category">
                                     <label>{category}</label>
                                 </div>
                             ))}
@@ -631,7 +657,7 @@ export default class TimeChannel extends React.Component<IProps, IState> {
                 */}
                 {!!this.state.tooltipItem &&
                     <div
-                        className="time-vis-tooltip"
+                        className="otv--tooltip"
                         style={{
                             left: this.state.tooltipX - 40 + 'px',
                             top: this.state.tooltipY - 60 + 'px',

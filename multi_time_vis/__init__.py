@@ -4,6 +4,7 @@ import os
 CHANNEL_TYPES = ['audio', 'data']
 
 
+
 def single_time_vis(channel,
                     bt=0,
                     tt=10000000,
@@ -40,8 +41,10 @@ def single_time_vis(channel,
 
     :param type: Must be "data"
     :param data: A list of data points, with the keys "value" and either ("bt" and "tt") or "time"
-    :param bargraph_max: The numeric value for the top of the cart, default 1
-    :param bargraph_min: The numeric value for the top of the cart, default -2
+    :param bargraph_max: The numeric value for the top of the chart, default 1
+    :param bargraph_min: The numeric value for the top of the chart, default -2
+    :param categories: For a winners channel, the list of categories to display
+        (matching the "winners" values of the data points)
     """
     assert channel.get('type', None) in CHANNEL_TYPES, 'Channel type must be "audio" or "data"'
     if channel['type'] == 'audio':

@@ -9,7 +9,7 @@ import {
     WinnersChannel,
 } from './TimeChannel';
 
-export const DEFAULT_CHUNK_SIZE_MS: number = 972;
+export const DEFAULT_CHUNK_SIZE_MCS: number = 975238;
 export const DEFAULT_WINDOW_SIZE: number = 512;
 const CANVAS_HEIGHT: number = 20;
 const CANVAS_WIDTH: number = 20000;
@@ -23,10 +23,12 @@ export function createBargraph(
         channel: DataChannel,
         from: number,
         to: number,
-        chunkSize: number = DEFAULT_CHUNK_SIZE_MS,
+        chunkSize: number = DEFAULT_CHUNK_SIZE_MCS,
     ): string {
-    const max: number = channel.bargraphMax || 1;
-    const min: number = channel.bargraphMin || -2;
+    const max: number = typeof channel.bargraphMax === 'number' ?
+        channel.bargraphMax : 1;
+    const min: number = typeof channel.bargraphMin === 'number' ?
+        channel.bargraphMin : -2;
     let data: DataPoint[];
     if (channel.filters) {
         // console.log('filters for', channel.title, channel.filters, channel.filterParams);
@@ -36,11 +38,13 @@ export function createBargraph(
     } else {
         data = channel.data;
     }
+    console.log({ data });
     const height: number = CANVAS_HEIGHT;
     const basis: number = getBasis(channel);
     const totalTimerange: number = to - from;
     const pointCount: number = totalTimerange / basis;
     const width: number = Math.max(CANVAS_WIDTH, pointCount);
+    console.log({ basis, data, pointCount, totalTimerange, width });
     const canvas = document.createElement('canvas') as any;
     canvas.setAttribute('height', height);
     canvas.setAttribute('width', width);
@@ -79,7 +83,7 @@ export function createHeatmap(
     channel: DataChannel,
     from: number,
     to: number,
-    chunkSize: number = DEFAULT_CHUNK_SIZE_MS,
+    chunkSize: number = DEFAULT_CHUNK_SIZE_MCS,
 ): string {
     let data: DataPoint[];
     if (channel.filters) {
@@ -120,11 +124,13 @@ export function createWinnersChart(
     channel: WinnersChannel,
     from: number,
     to: number,
-    chunkSize: number = DEFAULT_CHUNK_SIZE_MS,
+    categoryHeight: number = CATEGORY_HEIGHT,
+    chunkSize: number = DEFAULT_CHUNK_SIZE_MCS,
 ): string {
+    console.log('time for winners');
     const categories: string[] = channel.categories;
     const data: WinnerDataPoint[] = channel.data;
-    const basis: number = this.getBasis(channel);
+    const basis: number = getBasis(channel);
     const height: number = CATEGORY_HEIGHT * categories.length;
     const totalTimerange: number = to - from;
     const pointCount: number = totalTimerange / basis;
@@ -136,9 +142,10 @@ export function createWinnersChart(
     context.clearRect(0, 0, width, height);
     const timeRange: number = Math.max(to - from, 1);
     const color: string = channel.color || WINNERS_COLOR;
-    for (let i = 0; i < data.length; i++) {
+    for (let i: number = 0; i < data.length; i++) {
         const item: WinnerDataPoint = data[i];
         if (!item.winner) {
+            console.log(`No winner for ${i}`, item);
             continue;
         }
         const startPct: number = (item.time - from) / timeRange;
@@ -238,7 +245,7 @@ export function drawWaveform(
 }
 
 export function drawWaveformFromPeaks(
-    peaks: Array<[number, number]>,
+    peaks: [number, number][],
     params?: {
         limitColumns?: number,
         nFactor?: number,
@@ -269,7 +276,7 @@ export function drawWaveformFromPeaks(
 }
 
 export function drawWaveformFromConcatenatedPeaks(
-    data: Array<{bt: number, peaks: Array<[number, number]>}>,
+    data: {bt: number, peaks: [number, number][]}[],
     from: number,
     to: number,
     sr: number,
@@ -281,11 +288,11 @@ export function drawWaveformFromConcatenatedPeaks(
     const windowSize: number = params && params.windowSize ?
         params.windowSize : DEFAULT_WINDOW_SIZE;
     const mcsPerWindow: number = windowSize / sr * 1000000;
-    const peaksArrays: Array<Array<[number, number]>> = [];
+    const peaksArrays: [number, number][][] = [];
     console.log({ data });
     function addPadding(duration: number): void {
         const windowCount: number = Math.floor(duration / mcsPerWindow);
-        const zeroPeaks: Array<[number, number]> = [];
+        const zeroPeaks: [number, number][] = [];
         console.log('padding duration', { duration, sr, mcsPerWindow, windowCount });
         for (let i: number = 0; i < windowCount; i++) {
             zeroPeaks.push([0, 0]);
@@ -308,7 +315,7 @@ export function drawWaveformFromConcatenatedPeaks(
             addPadding(timeToNextBt);
         }
     }
-    const flattenedPeaks: Array<[number, number]> = _.flatten(peaksArrays);
+    const flattenedPeaks: [number, number][] = _.flatten(peaksArrays);
     return drawWaveformFromPeaks(flattenedPeaks, params);
 }
 
@@ -349,7 +356,7 @@ export function drawSpectrogram(data: any, useNewColors?: boolean): string {
 }
 
 function draw1x1Pixel(canvasData, index: number, rgb: [number, number, number]) {
-    canvasData.data[index + 0]  = Math.floor(rgb[0]);
+    canvasData.data[index]  = Math.floor(rgb[0]);
     canvasData.data[index + 1]  = Math.floor(rgb[1]);
     canvasData.data[index + 2]  = Math.floor(rgb[2]);
     canvasData.data[index + 3]  = 255;

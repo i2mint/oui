@@ -1,0 +1,181 @@
+$otosense-gray: #3c4547;
+
+.otv--vis-channel {
+    position: relative;
+    width: 100%;
+    div.otv--channel-title {
+        align-items: center;
+        position: relative;
+        display: flex;
+        height: 45px;
+        width: 100%;
+        white-space: nowrap;
+
+        .otv--subtitle {
+            font-size: 12px;
+            margin-left: 24px;
+            margin-right: 24px;
+        }
+        ul.otv--list {
+            transform: translate(6px, -6px);
+            background-color:$otosense-gray;
+            width: 13.9%;
+            min-width: 197px;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            li {
+                height: 30px;
+                div {
+                    height: 30px;
+                    font-size: 12px;
+                    display: flex;
+                    align-items: center;
+                }
+            }
+        }
+        .otv--close-button {
+            position: absolute;
+            right: 0;
+        }
+    }
+    .otv--canvas-container {
+        cursor: text;
+        width: 100%;
+        position: relative;
+        overflow-x: hidden;
+        overflow-y: visible;
+        .ctrl-indicator {
+            position: absolute;
+            background-color: black;
+            pointer-events: none;
+            height: 1px;
+            width: 100%;
+            z-index: 1;
+        }
+        img.ovt--vis-image{
+            border: 1px solid $otosense-gray;
+            height: calc(100% - 6px);
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            -ms-interpolation-mode: nearest-neighbor;
+            position: relative;
+            width: 100%;
+            height: 40px;
+        }
+        .otv--overlay-selections {
+            height: calc(100% - 1px);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            overflow-x: hidden;
+            .otv--selection {
+                position: absolute;
+                top: 0;
+                background-color: rgba(29, 154, 179, 0.4);
+                height: calc(100% - 6px);
+                &.otv--negative-range {
+                    background-color: rgba(179, 12, 12, 0.4);
+                }
+                &.otv--highlighted {
+                    border-right: 1px solid black;
+                    border-left: 1px solid black;
+
+                    &::before {
+                        position: absolute;
+                        bottom: -4px;
+                        left: -4px;
+                        background-color: #000;
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 100%;
+                        content: " ";
+                    }
+
+                    &::after {
+                        position: absolute;
+                        bottom: -4px;
+                        right: -4px;
+                        background-color: #000;
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 100%;
+                        content: " ";
+                    }
+                }
+
+                &.otv--annotation-highlight {
+                    border: 2px solid black;
+                }
+            }
+        }
+        .otv--indicator {
+            top: 0;
+            height: calc(100% - 7px);
+            position: absolute;
+            width: 0;
+            border-left: 1px solid black;
+
+            &::after {
+                position: absolute;
+                bottom: -4px;
+                left: -4px;
+                background-color: #000;
+                width: 8px;
+                height: 8px;
+                border-radius: 100%;
+                content: " ";
+            }
+        }
+
+        .otv--winners-labels {
+            position: absolute;
+            height: 100%;
+            top: 0;
+            width: 100%;
+
+            div.otv--category {
+                box-sizing: border-box;
+                height: 20px;
+                opacity: 0;
+                transition-duration: 0.5s;
+                width: 100%;
+
+                label {
+                    background-color: #dfe1e8;
+                    width: 150px;
+                }
+            }
+            &:hover {
+                .otv--category {
+                    opacity: 1;
+
+                    &:hover {
+                        border: 1px solid black;
+                    }
+                }
+            }
+        }
+    }
+    .otv--tooltip {
+        background-color: $otosense-gray;
+        color: #fff;
+        font-size: 12px;
+        padding: 6px 0;
+        position: fixed;
+        text-align: center;
+        width: 80px;
+
+        &::after {
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid $otosense-gray;
+            content: " ";
+            height: 12px;
+            width: 12px;
+            position: absolute;
+            left: 34px;
+            top: 100%;
+        }
+    }
+}
