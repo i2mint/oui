@@ -1,0 +1,3 @@
+include data/*
+recursive-include oui/ **.json
+recursive-include oui/ **.js
