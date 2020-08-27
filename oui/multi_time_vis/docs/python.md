@@ -30,7 +30,7 @@ wave_channel = {
 }
 single_time_vis(wave_channel, bt, tt, height=50)
 ```
-![peaks](/uploads/354597133e98afd690bc85ab7ba2295c/peaks.png)
+<img src="/uploads/354597133e98afd690bc85ab7ba2295c/peaks.png" height=50 width=1000 />
 
 Render a bar graph
 ```python
@@ -50,7 +50,7 @@ data_channel = {
 }
 single_time_vis(data_channel, bt=0, tt=mcs_per_chunk * 200, height=100)
 ```
-![bargraph](/uploads/c86fa2a184eaacad4805bddb3d3fbc1b/bargraph.png=1000x20)
+<img src="/uploads/c86fa2a184eaacad4805bddb3d3fbc1b/bargraph.png" height=100 width=1000 />
 
 Render a chart of winning categories for chunks
 ```python
