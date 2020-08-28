@@ -350,6 +350,8 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
         event.preventDefault();
         if (this._playing) {
             this.stopPlayback();
+            console.log('stopping!');
+            return;
         }
         const rect: ClientRect = this.container.getBoundingClientRect();
         const eventLeftPx: number = event.pageX - rect.left;

@@ -1,11 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const sourcePath = path.join(__dirname, './src');
+const sourcePath = path.join(__dirname, './oui');
 const outPath = path.join(__dirname, './js');
 
 module.exports = {
     mode: 'development',
+    // optimization: {
+    //     minimize: false,
+    // },
     context: sourcePath,
     entry: {
         main: './index.ts',
@@ -13,15 +16,12 @@ module.exports = {
     output: {
         path: outPath,
         publicPath: '/',
-        filename: 'splatter.js',
+        filename: 'index.js',
     },
     target: 'web',
     resolve: {
         modules: [sourcePath, 'node_modules'],
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    },
-    externals: {
-        fs: true
     },
     module: {
         rules: [{
@@ -31,9 +31,9 @@ module.exports = {
         // }, {
             test: /\.tsx?$/,
             use: ['awesome-typescript-loader'],
-        // }, {
-        //     test: /\.s?css$/,
-        //     use: ['style-loader', 'css-loader', 'sass-loader'],
+        }, {
+            test: /\.s?css$/,
+            use: ['style-loader', 'css-loader', 'sass-loader'],
         // }, {
         //     test: /\.json$/,
         //     loader: 'json-loader',

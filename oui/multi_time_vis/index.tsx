@@ -39,5 +39,3 @@ export function renderTimeChannel(
             suppressPlayOnSpace
         />, element);
 }
-
-window['renderTimeChannel'] = renderTimeChannel;

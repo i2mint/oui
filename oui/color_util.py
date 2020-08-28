@@ -1,4 +1,4 @@
-from ui_components import get_pkg_data
+from oui import get_pkg_data
 from typing import Iterable
 
 alpha_less_rgb_hex_length = len('#aabbcc')

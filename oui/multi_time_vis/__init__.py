@@ -71,8 +71,5 @@ def time_vis(channels):
 
 
 def _single_time_vis(channel, props):
-    js_target = os.path.join(os.path.dirname(__file__), 'js', 'time-vis.js')
-    with open(js_target) as js_file:
-        js_source = js_file.read()
-        js_source += f'renderTimeChannel(element.get(0), {channel}, {props})'.replace('True', 'true').replace('None', 'null')
+    js_source = f'renderTimeChannel(element.get(0), {channel}, {props})'.replace('True', 'true').replace('None', 'null')
     return Javascript(js_source)

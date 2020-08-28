@@ -7,18 +7,17 @@
         "declaration": true,
         "diagnostics": true,
         "sourceMap": true,
-        "module": "commonjs",
         "removeComments": true,
         "jsx": "react",
-        "baseUrl": "./src",
+        "rootDir": "./oui",
         "experimentalDecorators": true,
-        "outDir": "lib",
+        "outDir": "./lib",
         "noUnusedLocals": true,
-        "typeRoots" : ["./node_modules/@types", "./typings"]
+        "typeRoots" : ["./node_modules/@types", "./typings"],
     },
+    "include": [ "oui/**/*.ts*" ],
     "exclude": [
         "node_modules",
-        "dist",
-        "test",
+        "lib"
     ]
 }

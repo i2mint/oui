@@ -1,12 +1,16 @@
 from functools import partial
 from IPython.display import HTML, Javascript
 import os
-from i2.signatures import Sig
 from i2.deco import postprocess
 import json
 from collections.abc import Mapping
 from math import sqrt, pi
-from ui_components.color_util import color_hex_from, add_alpha, dec_to_hex
+from pathlib import Path
+
+from i2.signatures import Sig
+from oui.color_util import color_hex_from, add_alpha, dec_to_hex
+
+HTML('<script>var exports = {"__esModule": true};</script>')
 
 pkg_dir = os.path.dirname(__file__)
 dflt_filename = 'splatter_defaults.json'
@@ -26,14 +30,6 @@ _splatter_raw_sig = Sig.from_objs('pts', splatter_dflts.items())
 def assert_jsonizable(d):
     _ = json.dumps(d)
     return True
-
-
-if os.getenv('DEVELOPMENT', None):
-    js_libs = ['http://localhost:3000/splatter-v1-min.js']
-else:
-    js_libs = ['https://otosense-dev-ui.s3.amazonaws.com/static/js/tsne.js',
-               'https://otosense-dev-ui.s3.amazonaws.com/static/js/splatter.js']
-
 
 # @Sig.from_objs('pts', dflts.items(), assert_same_sized_fvs=True)
 # def mysplatter():
@@ -215,11 +211,7 @@ def _splatter(pts, options):
     assert_pts_are_valid(pts)
     if not options:
         options = {}
-    js_target = os.path.join(os.path.dirname(__file__), 'js', 'splatter.js')
-    with open(js_target) as js_file:
-        js_source = js_file.read()
-        js_source += f'splatter(element.get(0), {str(pts)}, {str(options)})'
-    return Javascript(js_source)
+    return Javascript(f'splatter(element.get(0), {str(pts)}, {str(options)})')
 
 
 # Just to note that we can do this with position only args too.
