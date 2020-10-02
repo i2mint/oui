@@ -15,8 +15,15 @@ pip install colorcet
 # with ModuleNotFoundIgnore():
 #     ...
 
-import umap
-import umap.plot
+try:
+    import umap
+    import umap.plot
+    from numba.core.typing import cffi_utils
+
+except Exception as err:
+    print(f"If you get a TypeError: wrapped() missing 1 required positional argument: 'name', "
+          f"you might want to consider doing a ``pip install numba==0.50.1``")
+    raise
 
 
 # from numba.core.typing import cffi_utils
@@ -24,9 +31,10 @@ import umap.plot
 
 def plot_umap_of_xy(X, y=None, return_projection=False, **umap_plot_points_kwargs):
     model = umap.UMAP()
+    model.fit(X)
     t = umap.plot.points(model, labels=y, **umap_plot_points_kwargs)
     if not return_projection:
         return t
     else:
-        projection = model.fit_transform(X)
+        projection = model.transform(X)
         return t, projection
