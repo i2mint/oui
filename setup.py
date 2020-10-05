@@ -1,89 +1,78 @@
-import os
-from configparser import ConfigParser
-from setuptools import find_packages
-from pack import read_configs
+from setuptools import setup
 
+setup()  # Note: Everything should be in the local setup.cfg
 
-def my_setup(print_params=True, **setup_kwargs):
-    from setuptools import setup
-    if print_params:
-        import json
-        print("Setup params -------------------------------------------------------")
-        print(json.dumps(setup_kwargs, indent=2))
-        print("--------------------------------------------------------------------")
-    setup(**setup_kwargs)
-
-
-# read the config file (get a dict with it's contents)
-root_dir = os.path.dirname(__file__)
-config_file = os.path.join(root_dir, 'setup.cfg')
-configs = read_configs(config_file, section='metadata')
-
-# parse out name and root_url
-name = configs['name']
-root_url = configs['root_url']
-version = configs.get('version', None)
-
-# Note: if version is not in config, version will be None,
-#  resulting in bumping the version or making it be 0.0.1 if the package is not found (i.e. first deploy)
-
-meta_data_dict = {k: v for k, v in configs.items()}
-
-# make the setup_kwargs
-setup_kwargs = dict(
-    meta_data_dict,
-    # You can add more key=val pairs here if they're missing in config file
-)
-
+# from setuptools import setup
 # import os
-# name = os.path.split(os.path.dirname(__file__))[-1]
+# from typing import Mapping, Union, Iterable, Generator
+# from configparser import ConfigParser
+# import re
+#
+# DFLT_CONFIG_FILE = 'setup.cfg'
+# DFLT_CONFIG_SECTION = 'metadata'
+#
+#
+# # TODO: postprocess_ini_section_items and preprocess_ini_section_items: Add comma separated possibility?
+# # TODO: Find out if configparse has an option to do this processing alreadys
+# def postprocess_ini_section_items(items: Union[Mapping, Iterable]) -> Generator:
+#     r"""Transform newline-separated string values into actual list of strings (assuming that intent)
+#
+#     >>> section_from_ini = {
+#     ...     'name': 'epythet',
+#     ...     'keywords': '\n\tdocumentation\n\tpackaging\n\tpublishing'
+#     ... }
+#     >>> section_for_python = dict(postprocess_ini_section_items(section_from_ini))
+#     >>> section_for_python
+#     {'name': 'epythet', 'keywords': ['documentation', 'packaging', 'publishing']}
+#
+#     """
+#     splitter_re = re.compile('[\n\r\t]+')
+#     if isinstance(items, Mapping):
+#         items = items.items()
+#     for k, v in items:
+#         if v.startswith('\n'):
+#             v = splitter_re.split(v[1:])
+#             v = [vv.strip() for vv in v if vv.strip()]
+#             v = [vv for vv in v if not vv.startswith('#')]  # remove commented lines
+#         yield k, v
+#
+#
+# def read_configs(
+#         config_file=DFLT_CONFIG_FILE,
+#         section=DFLT_CONFIG_SECTION,
+#         postproc=postprocess_ini_section_items):
+#     c = ConfigParser()
+#     c.read_file(open(config_file, 'r'))
+#     if section is None:
+#         d = dict(c)
+#         if postproc:
+#             d = {k: dict(postproc(v)) for k, v in c}
+#     else:
+#         d = dict(c[section])
+#         if postproc:
+#             d = dict(postproc(d))
+#     return d
+#
+#
+# def diagnose_setup_kwargs(setup_kwargs):
+#     """Diagnose setup_kwargs"""
+#     _, containing_folder_name = os.path.split(os.path.dirname(__file__))
+#     if setup_kwargs['name'] != containing_folder_name:
+#         print(f"!!!! containing_folder_name={containing_folder_name} but setup name is {setup_kwargs['name']}")
+#
+#
+# def my_setup(print_params=True, **setup_kwargs):
+#     if print_params:
+#         import json
+#         print("Setup params -------------------------------------------------------")
+#         print(json.dumps(setup_kwargs, indent=2))
+#         print("--------------------------------------------------------------------")
+#     setup(**setup_kwargs)
+#
+#
+# def set_it_up():
+#     setup_kwargs = read_configs()
+#     diagnose_setup_kwargs(setup_kwargs)
+#     my_setup(**setup_kwargs)
 
-if version is None:
-    try:
-        from pack import next_version_for_package
-
-        version = next_version_for_package(name)  # when you want to make a new package
-    except Exception as e:
-        print(f"Got an error trying to get the new version of {name} so will try to get the version from setup.cfg...")
-        print(f"{e}")
-        version = configs.get('version', None)
-        if version is None:
-            raise ValueError(f"Couldn't fetch the next version from PyPi (no API token?), "
-                             f"nor did I find a version in setup.cfg (metadata section).")
-
-
-def text_of_readme_md_file():
-    try:
-        with open('README.md') as f:
-            return f.read()
-    except:
-        return ""
-
-
-ujoin = lambda *args: '/'.join(args)
-
-if root_url.endswith('/'):
-    root_url = root_url[:-1]
-
-dflt_kwargs = dict(
-    name=f"{name}",
-    version=f'{version}',
-    url=f"{root_url}/{name}",
-    packages=find_packages(),
-    include_package_data=True,
-    platforms='any',
-    long_description=text_of_readme_md_file(),
-    long_description_content_type="text/markdown",
-)
-
-setup_kwargs = dict(dflt_kwargs, **setup_kwargs)
-
-##########################################################################################
-# Diagnose setup_kwargs
-_, containing_folder_name = os.path.split(os.path.dirname(__file__))
-if setup_kwargs['name'] != containing_folder_name:
-    print(f"!!!! containing_folder_name={containing_folder_name} but setup name is {setup_kwargs['name']}")
-
-##########################################################################################
-# Okay... set it up alright!
-my_setup(**setup_kwargs)
+# set_it_up()
