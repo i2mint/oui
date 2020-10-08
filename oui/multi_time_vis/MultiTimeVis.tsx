@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 // import * as moment from 'moment';
-import SoundUtility from 'otosense-sound-utils';
+import SoundUtility from '../sound_utils';
 
 import TimeAxis from './TimeAxis';
 import TimeChannel, { AudioChannel, DataChannel, DataPoint } from './TimeChannel';

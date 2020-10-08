@@ -2,4 +2,4 @@ include data/*
 recursive-include oui/ **.json
 recursive-include oui/ **.js
 
-574553070
+exclude node_modules

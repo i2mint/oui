@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import * as _ from 'lodash';
-import SoundUtility from 'otosense-sound-utils';
+import SoundUtility from '../sound_utils';
 
 import {
     createBargraph,

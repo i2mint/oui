@@ -1,6 +1,6 @@
 {
-  "name": "otosense-ui-components",
-  "version": "0.0.6a",
+  "name": "@otosense/oui",
+  "version": "0.0.8",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "prepack": "tsc"
   },
   "author": "",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "@syncfusion/ej2-react-navigations": "^18.1.54",
     "@syncfusion/ej2-react-treegrid": "^18.1.54",
@@ -40,5 +40,6 @@
     "typescript": "^3.4.5",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
-  }
+  },
+  "files": ["lib/**"]
 }

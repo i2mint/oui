@@ -7,17 +7,21 @@
         "declaration": true,
         "diagnostics": true,
         "sourceMap": true,
+        "module": "commonjs",
         "removeComments": true,
         "jsx": "react",
-        "rootDir": "./oui",
+        "rootDir": "oui",
         "experimentalDecorators": true,
-        "outDir": "./lib",
+        "outDir": "lib",
         "noUnusedLocals": true,
-        "typeRoots" : ["./node_modules/@types", "./typings"],
+        "typeRoots" : ["./node_modules/@types", "./typings"]
     },
-    "include": [ "oui/**/*.ts*" ],
+    "include": [ "**/*.ts", "**/*.tsx", "**/*.scss" ],
     "exclude": [
+        "build",
+        "dist",
         "node_modules",
-        "lib"
+        "lib",
+        "oui.egg-info"
     ]
 }
