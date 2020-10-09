@@ -568,7 +568,7 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
         const subtitle: string = this.props.subtitle || channel.subtitle || '';
         return (
             <div className="otv--vis-channel">
-                {!!title || !!subtitle || !!this.props.controlContainer || !!this.props.menu || channel.closable &&
+                {(!!title || !!subtitle || !!this.props.controlContainer || !!this.props.menu || channel.closable) &&
                     <div className="otv--channel-title">
                         {!!title && <div className="otv--title"><strong>{title}</strong></div>}
                         {!!subtitle && <div className="otv--subtitle">{subtitle}</div>}
