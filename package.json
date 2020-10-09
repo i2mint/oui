@@ -1,6 +1,6 @@
 {
   "name": "@otosense/oui",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,7 +17,6 @@
     "d3": "^5.16.0",
     "lodash": "^4.17.19",
     "moment": "^2.27.0",
-    "otosense-sound-utils": "0.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"

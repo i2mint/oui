@@ -1,0 +1,1 @@
+{dist_command: { "rsync -Ra src/./**/*.inc dest/." }}
