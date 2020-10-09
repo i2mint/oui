@@ -11,6 +11,7 @@ import {
     drawWaveform,
     DEFAULT_CHUNK_SIZE_MCS,
     DEFAULT_WINDOW_SIZE,
+    getNFactor,
 } from './processing';
 import { SelectedRange, Timerange } from './MultiTimeVis';
 
@@ -38,6 +39,7 @@ export interface AudioChannel {
     from?: number;
     image?: string;
     onClose?: () => void;
+    normalize?: boolean;
     subtitle?: string;
     title?: string;
     to?: number;
@@ -183,6 +185,12 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
         }
     }
 
+    componentWillUnmount(): void {
+        if (this.props.enablePlayback && !this.props.suppressPlayOnSpace) {
+            window.removeEventListener('keydown', this.togglePlaybackOnKeydown);
+        }
+    }
+
     componentWillReceiveProps(newProps: IProps): void {
         if (newProps.channel !== this.props.channel) {
             if (newProps.channel &&
@@ -262,7 +270,8 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
             }
             promise.then((audioBuffer: AudioBuffer) => {
                 const audioData: Float32Array = audioBuffer.getChannelData(0);
-                const image: string = drawWaveform(audioData, { windowSize: channel.windowSize || DEFAULT_WINDOW_SIZE });
+                const nFactor: number = channel.normalize ? getNFactor(audioData) : 1;
+                const image: string = drawWaveform(audioData, { nFactor, windowSize: channel.windowSize || DEFAULT_WINDOW_SIZE });
                 channel.image = image;
                 this.setState({ image });
             });
@@ -350,8 +359,6 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
         event.preventDefault();
         if (this._playing) {
             this.stopPlayback();
-            console.log('stopping!');
-            return;
         }
         const rect: ClientRect = this.container.getBoundingClientRect();
         const eventLeftPx: number = event.pageX - rect.left;
