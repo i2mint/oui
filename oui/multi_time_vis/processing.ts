@@ -208,6 +208,27 @@ function getPeaks(bucket: Float32Array): [number, number] {
     return [min, max];
 }
 
+export function getNFactor(data: Float32Array): number {
+    let min: number = 0;
+    let max: number = 0;
+    for (let i: number = 0; i < data.length; i++) {
+        const value: number = data[i];
+        if (value > max) {
+            max = value;
+        } else if (value < min) {
+            min = value;
+        }
+    }
+    const minAbs: number = Math.abs(min);
+    if (minAbs > max) {
+        max = minAbs;
+    }
+    if (max <= 0) {
+        return 1;
+    }
+    return 1 / max;
+}
+
 export function drawWaveform(
     data: Float32Array,
     params?: {

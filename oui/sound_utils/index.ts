@@ -1,5 +1,7 @@
 window['AudioContext'] = window['AudioContext'] || window['webkitAudioContext'];
 
+import * as _ from 'lodash';
+
 import fftWorker from './fft-webworker';
 const fftWorkerCode: string = fftWorker as any;
 const blob = new Blob([fftWorkerCode], { type: 'application/javascript'});
@@ -101,8 +103,10 @@ export default class SoundUtility {
 
     stop: VoidFunction = () => {
         try {
-            this.bufferSource.onended = null;
-            this.bufferSource.stop(0);
+            if (this.bufferSource) {
+                this.bufferSource.onended = null;
+                this.bufferSource.stop(0);
+            }
         } catch (e) {
             console.warn(e);
         }
@@ -115,4 +119,52 @@ export default class SoundUtility {
             this.onEnded();
         }
     }
+}
+
+/**
+ * Creates a WAV (RIFF) audio file header for a given set of parameters
+ * @param sr The sample rate
+ * @param bit_depth The bit_depth
+ * @param bufferSize The size of the audio data in bytes
+ * @returns The header as a 44-byte UInt8Array
+ */
+export function generateWAVHeader(sr: number, bit_depth: number, bufferSize: number): Uint8Array {
+    const arrayBuffer: ArrayBuffer = new ArrayBuffer(44);
+    const view: DataView = new DataView(arrayBuffer);
+    const textEncoder: TextEncoder = new TextEncoder();
+    // bytes 1-4: 'RIFF'
+    const RIFF: Uint8Array = textEncoder.encode('RIFF');
+    _.forEach(RIFF, (letter: number, index: number) => view.setUint8(index, letter));
+    // bytes 5-8: total file size, including header
+    if (bufferSize > 0) {
+        view.setUint32(4, bufferSize + 44 - 8, true);
+    } else {
+        view.setUint32(4, -1, true);
+    }
+    // bytes 9-12: 'WAVE'
+    const WAVE: Uint8Array = textEncoder.encode('WAVE');
+    _.forEach(WAVE, (letter: number, index: number) => view.setUint8(index + 8, letter));
+    // bytes 13-16: 'fmt' plus null
+    const fmt: Uint8Array = textEncoder.encode('fmt ');
+    _.forEach(fmt, (letter: number, index: number) => view.setUint8(index + 12, letter));
+    // bytes 17-20: length of format section (16)
+    view.setUint32(16, 16, true);
+    // bytes 21-22: format type (1 for PCM)
+    view.setUint16(20, 1, true);
+    // bytes 23-24: number of channels
+    view.setUint16(22, 1, true);
+    // bytes 25-28: sample rate
+    view.setUint32(24, sr, true);
+    // bytes 29-32: total bytes per second
+    view.setUint32(28, (bit_depth * sr) / 8, true);
+    // bytes 33-34: bytes per sample times channels
+    view.setUint16(32, bit_depth / 8, true);
+    // bytes 35-36: bits per sample
+    view.setUint16(34, bit_depth, true);
+    // bytes 37-40: 'data'
+    const data: Uint8Array = textEncoder.encode('data');
+    _.forEach(data, (letter: number, index: number) => view.setUint8(index + 36, letter));
+    // bytes 41-44: audio data size
+    view.setUint32(40, bufferSize, true);
+    return new Uint8Array(arrayBuffer);
 }

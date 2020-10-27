@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const sourcePath = path.join(__dirname, './oui');
-const outPath = path.join(__dirname, './js');
+const outPath = path.join(__dirname, './oui/js');
 
 module.exports = {
     mode: 'development',

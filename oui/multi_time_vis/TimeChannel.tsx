@@ -186,8 +186,11 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
     }
 
     componentWillUnmount(): void {
-        if (this.props.enablePlayback && !this.props.suppressPlayOnSpace) {
-            window.removeEventListener('keydown', this.togglePlaybackOnKeydown);
+        if (this.props.enablePlayback) {
+            this.stopPlayback();
+            if (!this.props.suppressPlayOnSpace) {
+                window.removeEventListener('keydown', this.togglePlaybackOnKeydown);
+            }
         }
     }
 
@@ -349,6 +352,7 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
     // }
 
     setIndicatorOnClick: (event: MouseEvent) => void = (event: MouseEvent) => {
+        this.stopPlayback();
         const rect: ClientRect = this.container.getBoundingClientRect();
         const eventLeftPx: number = event.pageX - rect.left;
         const ratio: number = eventLeftPx / rect.width;

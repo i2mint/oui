@@ -1,8 +1,55 @@
 from IPython.display import Javascript
 import os
+import soundfile
 
 CHANNEL_TYPES = ['audio', 'data']
 
+
+def mk_time_channel(filename, chart_type='peaks'):
+    """
+    Make a single_time_vis time channel dict from an audio file.
+
+    :param filename: The filename to open
+    """
+    wf, sr = soundfile.read(filename, dtype='int16')
+    return {
+        'chartType': chart_type,
+        'type': 'audio',
+        'buffer': list(wf),
+        'sr': sr
+    }
+
+
+def render_wav_file(filename,
+                    chart_type='peaks',
+                    enable_playback=True,
+                    height=50,
+                    params=None,
+                    title='',
+                    subtitle=''):
+    """
+    Renders a time visualization of a WAV file from its filename.
+
+    :param filename: The filename to load
+    :param chart_type: The chart type to render, either 'peaks' (default) or 'spectrogram
+    :param enable_playback: Whether to enable playback on double click (default True)
+    :param height: The height of the chart in pixels (default 50)
+    :param params: Extra rendering parameters, currently unused
+    :param title: The title to display, defaults to the filename
+    :param subtitle: An optional subtitle to display under the title
+    """
+    channel = mk_time_channel(filename, chart_type)
+    duration_s = len(channel['buffer']) / channel['sr']
+    title = title or filename
+    return single_time_vis(channel,
+                           bt=0,
+                           tt=int(duration_s * 1000000),
+                           chart_type=chart_type,
+                           enable_playback=enable_playback,
+                           height=height,
+                           params=params,
+                           title=title,
+                           subtitle=subtitle)
 
 
 def single_time_vis(channel,
@@ -48,9 +95,11 @@ def single_time_vis(channel,
     """
     assert channel.get('type', None) in CHANNEL_TYPES, 'Channel type must be "audio" or "data"'
     if channel['type'] == 'audio':
-        assert channel.get('url') or channel.get('buffer'), 'Channel must have a "url" or "buffer" (list of integers)'
+        assert 'url' in channel or ('buffer' in channel and 'sr' in channel), 'Channel must have either "url" or "buffer" (list of integers) and "sr"'
+        if not chart_type:
+            chart_type = 'peaks'
     else:
-        assert channel.get('data')
+        assert 'data' in channel
     props = dict({}, bt=bt, tt=tt, chart_type=chart_type, enable_playback=enable_playback, height=height,
                  params=params, title=title, subtitle=subtitle)
     return _single_time_vis(channel, props)
