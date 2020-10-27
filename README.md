@@ -1,4 +1,4 @@
-# ui_components
+# oui
 
 Making highly reusable UI components for sound recognition pipelines. 
 
