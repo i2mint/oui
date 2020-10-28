@@ -1,4 +1,5 @@
 from IPython.display import Javascript
+from copy import copy
 import os
 import soundfile
 
@@ -10,13 +11,17 @@ def mk_time_channel(filename, chart_type='peaks'):
     Make a single_time_vis time channel dict from an audio file.
 
     :param filename: The filename to open
+    :param chart_type: The chart type to render, either 'peaks' (default) or 'spectrogram'
     """
     wf, sr = soundfile.read(filename, dtype='int16')
+    duration_s = len(wf) / sr
     return {
+        'bt': 0,
         'chartType': chart_type,
         'type': 'audio',
-        'buffer': list(wf),
-        'sr': sr
+        'wf': list(wf),
+        'sr': sr,
+        'tt': int(duration_s * 1000000)
     }
 
 
@@ -31,7 +36,7 @@ def render_wav_file(filename,
     Renders a time visualization of a WAV file from its filename.
 
     :param filename: The filename to load
-    :param chart_type: The chart type to render, either 'peaks' (default) or 'spectrogram
+    :param chart_type: The chart type to render, either 'peaks' (default) or 'spectrogram'
     :param enable_playback: Whether to enable playback on double click (default True)
     :param height: The height of the chart in pixels (default 50)
     :param params: Extra rendering parameters, currently unused
@@ -39,11 +44,10 @@ def render_wav_file(filename,
     :param subtitle: An optional subtitle to display under the title
     """
     channel = mk_time_channel(filename, chart_type)
-    duration_s = len(channel['buffer']) / channel['sr']
     title = title or filename
     return single_time_vis(channel,
-                           bt=0,
-                           tt=int(duration_s * 1000000),
+                           bt=channel['bt'],
+                           tt=channel['tt'],
                            chart_type=chart_type,
                            enable_playback=enable_playback,
                            height=height,
@@ -54,8 +58,8 @@ def render_wav_file(filename,
 
 def single_time_vis(channel,
                     bt=0,
-                    tt=10000000,
-                    chart_type='bargraph',
+                    tt=0,
+                    chart_type=None,
                     enable_playback=True,
                     height=50,
                     params=None,
@@ -64,7 +68,7 @@ def single_time_vis(channel,
     """
     Render a visualization of time series or audio data.
 
-    :param channel: A time channel dict (see below)
+    :param channel: A time channel dict or a list of numbers (see below)
     :param bt: The logical start time of the display, in microseconds
     :param tt: The logical end time of the display, in microseconds
     :param chart_type: The type of visualization to draw, one of
@@ -78,47 +82,65 @@ def single_time_vis(channel,
     Channel keys:
 
     Audio channel:
-    Either "url" or "buffer"
+    Should include either "url" or both "wf" and "sr"
 
-    :param type: Must be "audio"
     :param url: A URL to access WAV-format audio over HTTP
-    :param buffer: A list of 16-bit integers
+    :param wf: A list of 16-bit integers
+    :param sr: The sample rate of the recording
 
     Data channel:
 
-    :param type: Must be "data"
+    Can be a list of numbers (for bargraphs or heatmaps) or strings (for winners).
+    Otherwise, a channel dict with the following keys:
+
     :param data: A list of data points, with the keys "value" and either ("bt" and "tt") or "time"
-    :param bargraph_max: The numeric value for the top of the chart, default 1
-    :param bargraph_min: The numeric value for the top of the chart, default -2
+    :param bargraphMax: The numeric value for the top of the chart, default 1
+    :param bargraphMin: The numeric value for the top of the chart, default -2
     :param categories: For a winners channel, the list of categories to display
         (matching the "winners" values of the data points)
     """
-    assert channel.get('type', None) in CHANNEL_TYPES, 'Channel type must be "audio" or "data"'
-    if channel['type'] == 'audio':
-        assert 'url' in channel or ('buffer' in channel and 'sr' in channel), 'Channel must have either "url" or "buffer" (list of integers) and "sr"'
-        if not chart_type:
-            chart_type = 'peaks'
-    else:
-        assert 'data' in channel
+    channel = _preprocess_channel(channel)
     props = dict({}, bt=bt, tt=tt, chart_type=chart_type, enable_playback=enable_playback, height=height,
                  params=params, title=title, subtitle=subtitle)
     return _single_time_vis(channel, props)
 
 
-def time_vis(channels):
+def time_vis(channels, props=None):
     """
     Render multiple channels.
 
     :param channels: The channels to render, a list of dicts.
     :return:
     """
-    pass
-    # options = dict({}, fillColors=fillColors, fps=fps, height=height, maxIterations=maxIterations, nodeSize=nodeSize,
-    #                untaggedColor=untaggedColor, width=width, dim=dim, epsilon=epsilon, perplexity=perplexity,
-    #                spread=spread)
-    # return _splatter(pts, options, assert_same_sized_fvs)
+    if not props:
+        props = {}
+    channels = [_preprocess_channel(channel) for channel in channels]
+    js_source = f'renderMultiTimeVis(element.get(0), {channels}, {props})'.replace('True', 'true').replace('None', 'null')
+    return Javascript(js_source)
+
+
+def _preprocess_channel(channel):
+    preprocessed = copy(channel)
+    if isinstance(preprocessed, list):
+        preprocessed = {
+            'chart_type': 'bargraph',
+            'data': preprocessed,
+            'type': 'data',
+        }
+    data = preprocessed.get('data', [])
+    if data:
+        if isinstance(data[0], str):
+            preprocessed['chart_type'] = 'winners'
+            preprocessed['categories'] = list(set(data))
+        else:
+            preprocessed['bargraphMax'] = max(*data)
+    if 'wf' in preprocessed or 'url' in preprocessed:
+        preprocessed['type'] = 'audio'
+        preprocessed['chart_type'] = 'peaks'
+    return preprocessed
 
 
 def _single_time_vis(channel, props):
     js_source = f'renderTimeChannel(element.get(0), {channel}, {props})'.replace('True', 'true').replace('None', 'null')
     return Javascript(js_source)
+

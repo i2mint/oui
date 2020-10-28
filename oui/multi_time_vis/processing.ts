@@ -9,7 +9,7 @@ import {
     WinnersChannel,
 } from './TimeChannel';
 
-export const DEFAULT_CHUNK_SIZE_MCS: number = 975238;
+export const DFLT_CHK_SIZE_MCS: number = 975238;
 export const DEFAULT_WINDOW_SIZE: number = 512;
 const CANVAS_HEIGHT: number = 20;
 const CANVAS_WIDTH: number = 20000;
@@ -23,7 +23,7 @@ export function createBargraph(
         channel: DataChannel,
         from: number,
         to: number,
-        chunkSize: number = DEFAULT_CHUNK_SIZE_MCS,
+        chunkSize: number = DFLT_CHK_SIZE_MCS,
     ): string {
     const max: number = typeof channel.bargraphMax === 'number' ?
         channel.bargraphMax : 1;
@@ -83,7 +83,7 @@ export function createHeatmap(
     channel: DataChannel,
     from: number,
     to: number,
-    chunkSize: number = DEFAULT_CHUNK_SIZE_MCS,
+    chunkSize: number = DFLT_CHK_SIZE_MCS,
 ): string {
     let data: DataPoint[];
     if (channel.filters) {
@@ -125,7 +125,7 @@ export function createWinnersChart(
     from: number,
     to: number,
     categoryHeight: number = CATEGORY_HEIGHT,
-    chunkSize: number = DEFAULT_CHUNK_SIZE_MCS,
+    chunkSize: number = DFLT_CHK_SIZE_MCS,
 ): string {
     console.log('time for winners');
     const categories: string[] = channel.categories;

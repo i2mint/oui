@@ -6,8 +6,8 @@ Renders a single-row visualization.
 
 Required props:
 * __channel__ An `AudioChannel`, `DataChannel`, or `WinnersChannel` containing the data to render
-* __from__ The start timestamp of the channel, in microseconds.
-* __to__ The end timestamp of the channel, in microsedonds.
+* __bt__ The start timestamp of the channel, in microseconds.
+* __tt__ The end timestamp of the channel, in microsedonds.
 
 Optional props:
 * __annotations__ An array of `Timerange` objects to render as overlays on the chart.
@@ -48,8 +48,8 @@ Either one of these keys is required (not all three):
 * __image__ A pre-drawn image data URL
 
 Optional keys:
-* __from__ The start timestamp of the audio, in microseconds, if different from the TimeChannel element
-* __to__ The start timestamp of the audio, in microseconds, if different from the TimeChannel element
+* __bt__ The start timestamp of the audio, in microseconds, if different bt the TimeChannel element
+* __tt__ The start timestamp of the audio, in microseconds, if different bt the TimeChannel element
 * __windowSize__ The width of windows used for calculating signal peaks when drawing a peaks diagram.
 
 ### Interface `DataChannel`

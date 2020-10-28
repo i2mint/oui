@@ -16,18 +16,18 @@ export interface Timerange {
 }
 
 export interface SelectedRange {
-    from: number;
+    bt: number;
     highlighted?: boolean;
-    to: number;
+    tt: number;
 }
 
 interface RequiredProps {
-    channels: Array<AudioChannel | DataChannel>;
-    from: number;
+    channels: (AudioChannel | DataChannel)[];
+    bt: number;
     leftX: number;
     params: any;
     rightX: number;
-    to: number;
+    tt: number;
 }
 
 interface IProps extends RequiredProps {
@@ -43,7 +43,6 @@ interface IProps extends RequiredProps {
     getAnnotationHighlight?: (item: any) => boolean;
     highlightKey?: string;
     highlightValue?: string;
-    hideTimeScale?: boolean;
     indicatorX?: number;
     maxScale?: number;
     onClick?: () => any;
@@ -58,6 +57,7 @@ interface IProps extends RequiredProps {
     setLeftAndRight?: (leftX: number, rightX: number) => void;
     selectedIntervals?: SelectedRange[];
     selectionMenu?: JSX.Element;
+    showTimeScale?: boolean;
     startPlayback?: (fromRatio: number) => void;
     stopPlayback?: VoidFunction;
     togglePlayback?: VoidFunction;
@@ -71,10 +71,10 @@ interface IState {
     contextMenuVisible: boolean;
     helpDialog: boolean;
     hoverX: number;
-    negativeRange: { from: number, to: number };
+    negativeRange: { bt: number, tt: number };
     selecting: boolean;
     selectionEnd: number;
-    selectionRanges: Array<{ from: number, to: number }>;
+    selectionRanges: { bt: number, tt: number }[];
     selectionStart: number;
 }
 
@@ -88,7 +88,7 @@ function inhibitScroll(event: WheelEvent): void {
     }
 }
 
-export default class MultiTimeVis extends React.Component<IProps, IState> {
+export default class MultiTimeVis extends React.Component<IProps, Partial<IState>> {
     element: HTMLDivElement;
     soundUtils: SoundUtility;
     root: any;
@@ -116,7 +116,7 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
     }
 
     componentDidMount() {
-        window.addEventListener('keydown', this.handleKeyDown);
+        // window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('click', this.handleOutsideClick);
         window.addEventListener('mousewheel', inhibitScroll, { passive: false });
     }
@@ -134,7 +134,7 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
         }
     }
 
-    componentWillUnmount(): void {
+    componentWillUnmount: VoidFunction = () => {
         this.stopPlayback();
         window.removeEventListener('mouseup', this.stopSelecting);
         window.removeEventListener('mousemove', this.select);
@@ -143,27 +143,21 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
         window.removeEventListener('mousewheel', inhibitScroll);
     }
 
-    closeDialogs(): void {
-        this.setState({
-            helpDialog: false,
-        });
-    }
+    closeDialogs: VoidFunction = () => this.setState({ helpDialog: false });
 
-    helpDialog(): void {
-        this.setState({ helpDialog: true });
-    }
+    helpDialog: VoidFunction = () => this.setState({ helpDialog: true });
 
-    updateScale(leftX: number, rightX: number) {
+    updateScale: (leftX: number, rightX: number) => void = (leftX: number, rightX: number) => {
         if (this.props.setLeftAndRight) {
             this.props.setLeftAndRight(leftX, rightX);
         }
     }
 
-    handleOutsideClick(): void {
+    handleOutsideClick: VoidFunction = () => {
         this.setState({ contextMenuVisible: false });
     }
 
-    clearSelection(): void {
+    clearSelection: VoidFunction = () => {
         if (this.props.clearSelection) {
             this.props.clearSelection();
         }
@@ -173,45 +167,43 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
         });
     }
 
-    handleSetLeftAndRight(left: number, right: number) {
+    handleSetLeftAndRight: (left: number, right: number) => void = (left: number, right: number) =>
         this.props.setLeftAndRight(left, right);
-    }
 
-    makeRef(ref: HTMLDivElement): void {
+    makeRef: (ref: HTMLDivElement) => void = (ref: HTMLDivElement) => {
         this.element = ref;
     }
 
     // Playback helpers
-    stopPlayback() {
+    stopPlayback: VoidFunction = () => {
         if (this.props.stopPlayback) {
             this.props.stopPlayback();
         }
     }
 
     // Event handlers
-    findEventLocation(event: MouseEvent): number {
+    findEventLocation: (event: MouseEvent) => number = (event: MouseEvent) => {
         const rect: ClientRect = this.element.getBoundingClientRect();
         const eventLeftPx: number = event.pageX - rect.left;
         return eventLeftPx / rect.width;
     }
 
-    handleDoubleClick(e: React.SyntheticEvent<MouseEvent>): void {
-        console.log('double click!');
+    handleDoubleClick: (e: React.SyntheticEvent<MouseEvent>) => void =
+        (e: React.SyntheticEvent<MouseEvent>) => {
         const startFromRatio: number = this.findEventLocation(e.nativeEvent as MouseEvent);
         const visibleRange: number = this.props.rightX - this.props.leftX;
         const realRatio: number = startFromRatio * visibleRange + this.props.leftX;
         const found = _.find(this.props.selectedIntervals, (range: SelectedRange) => {
-            return range.from <= realRatio && range.to >= realRatio;
+            return range.bt <= realRatio && range.tt >= realRatio;
         });
         if (found) {
-            console.log('from', found, (found.from - this.props.leftX) / visibleRange);
-            this.props.startPlayback((found.from - this.props.leftX) / visibleRange);
+            this.props.startPlayback((found.bt - this.props.leftX) / visibleRange);
         } else {
             this.props.startPlayback(startFromRatio);
         }
     }
 
-    handleWheel(e: React.SyntheticEvent<Event>) {
+    handleWheel: (e: React.SyntheticEvent<Event>) => void = (e: React.SyntheticEvent<Event>) => {
         const ne: WheelEvent = e.nativeEvent as WheelEvent;
         if (ne.shiftKey) {
             const left: number = this.findEventLocation(ne as MouseEvent);
@@ -251,7 +243,7 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
         }
     }
 
-    handleKeyDown(event: any) {
+    handleKeyDown: (event: any) => void = (event: any) => {
         const keycode: number = event.which || event.keyCode;
         const highlight: Timerange = _.find(this.props.annotations, (range) => range.highlighted);
         if (keycode === 27) { // Escape
@@ -269,27 +261,31 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
                 this.props.deleteHighlightedRanges();
             }
         } else if (keycode === 32 && !this.props.blockKeyEvents) { // Spacebar
-            this.props.togglePlayback();
-            event.preventDefault();
+            if (this.props.togglePlayback) {
+                this.props.togglePlayback();
+            }
+            // event.preventDefault();
         }
     }
 
-    select(e: React.SyntheticEvent<MouseEvent> | any) {
+    select: (e: React.SyntheticEvent<MouseEvent> | any) => void =
+        (e: React.SyntheticEvent<MouseEvent> | any) => {
         const eventLocation: number = this.findEventLocation(e);
         if (eventLocation < 0) {
             return;
         }
-        const selectionRanges: Array<{ from: number, to: number }> = [...this.state.selectionRanges];
-        const negativeRange: { from: number, to: number } = this.state.negativeRange;
+        const selectionRanges: { bt: number, tt: number }[] = [...this.state.selectionRanges];
+        const negativeRange: { bt: number, tt: number } = this.state.negativeRange;
         if ((e as MouseEvent).ctrlKey) {
-            negativeRange.to = eventLocation;
+            negativeRange.tt = eventLocation;
         } else if (selectionRanges && selectionRanges.length) {
-            _.last(selectionRanges).to = eventLocation;
+            _.last(selectionRanges).tt = eventLocation;
         }
         this.setState({ negativeRange, selectionRanges, selectionEnd: eventLocation });
     }
 
-    startSelecting(e: React.SyntheticEvent<MouseEvent> | any) {
+    startSelecting: (e: React.SyntheticEvent<MouseEvent> | any) => void =
+        (e: React.SyntheticEvent<MouseEvent> | any) => {
         if ((e.nativeEvent as MouseEvent).button !== 0) {
             return;
         }
@@ -307,7 +303,7 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
         window.addEventListener('mousemove', this.select);
         if ((e as MouseEvent).ctrlKey) {
             this.setState ({
-                negativeRange: {from: eventLocation, to: eventLocation},
+                negativeRange: { bt: eventLocation, tt: eventLocation },
                 selecting: true,
                 selectionEnd: eventLocation,
                 selectionStart: eventLocation,
@@ -321,7 +317,8 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
         });
     }
 
-    stopSelecting(event: React.SyntheticEvent<MouseEvent> | any): void {
+    stopSelecting: (event: React.SyntheticEvent<MouseEvent> | any) => void =
+        (event: React.SyntheticEvent<MouseEvent> | any) => {
         window.removeEventListener('mouseup', this.stopSelecting);
         window.removeEventListener('mousemove', this.select);
         event.preventDefault();
@@ -333,7 +330,7 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
         const realSelectionEnd: number = selectionEnd * visibleRange + this.props.leftX;
         if (selectionStart === selectionEnd) {
             const found = _.find(this.props.selectedIntervals, (range: SelectedRange) => {
-                return range.from <= realSelectionStart && range.to >= realSelectionStart;
+                return range.bt <= realSelectionStart && range.tt >= realSelectionStart;
             });
             if (found) {
                 found.highlighted = true;
@@ -344,13 +341,13 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
             return;
         }
         const negative = this.state.negativeRange ? {
-            from: Math.min(this.state.negativeRange.from, this.state.negativeRange.to),
-            to: Math.max(this.state.negativeRange.from, this.state.negativeRange.to),
+            bt: Math.min(this.state.negativeRange.bt, this.state.negativeRange.tt),
+            tt: Math.max(this.state.negativeRange.bt, this.state.negativeRange.tt),
         } : null;
         if (negative && this.props.onTrim) {
-            negative.from = negative.from * visibleRange + this.props.leftX;
-            negative.to = negative.to * visibleRange + this.props.leftX;
-            this.props.onTrim(negative.from, negative.to);
+            negative.bt = negative.bt * visibleRange + this.props.leftX;
+            negative.tt = negative.tt * visibleRange + this.props.leftX;
+            this.props.onTrim(negative.bt, negative.tt);
         } else if (this.props.onSelect) {
             this.props.onSelect(realSelectionStart, realSelectionEnd);
         }
@@ -406,14 +403,14 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
                             return (
                                 <TimeChannel
                                     activeSelection={!this.state.selecting ? undefined :
-                                        { from: this.state.selectionStart, to: this.state.selectionEnd }
+                                        { bt: this.state.selectionStart, tt: this.state.selectionEnd }
                                     }
                                     annotations={this.props.annotations}
+                                    bt={this.props.bt || channel.bt}
                                     channel={channel}
                                     chartType={this.props.chartType || 'bargraph'}
                                     contextMenuHandler={this.props.contextMenuHandler}
                                     controlContainer={controls}
-                                    from={this.props.from}
                                     leftX={this.props.leftX}
                                     key={channel.guid + channel.title}
                                     clickHandler={undefined}
@@ -424,7 +421,7 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
                                     highlightValue={this.props.highlightValue}
                                     indicatorX={this.props.indicatorX}
                                     doubleClickHandler={this.handleDoubleClick}
-                                    keydownHandler={this.handleKeyDown}
+                                    // keydownHandler={this.handleKeyDown}
                                     menu={index === 0 && this.props.selectionMenu ?
                                         this.props.selectionMenu : undefined}
                                     negativeRange={!!this.state.negativeRange}
@@ -438,19 +435,19 @@ export default class MultiTimeVis extends React.Component<IProps, IState> {
                                     subtitle={index === 0 ? this.props.subtitle : undefined}
                                     suppressAudio
                                     suppressEvents
-                                    to={this.props.to}
+                                    tt={this.props.tt || channel.tt}
                                     zoomHandler={this.props.zoomable ? this.handleWheel : undefined}
                                 />
                             );
                         })}
                     </div>
                 }
-                {!this.props.hideTimeScale &&
+                {this.props.showTimeScale &&
                     <TimeAxis
-                        from={this.props.from}
+                        bt={this.props.bt}
                         leftX={this.props.leftX}
                         rightX={this.props.rightX}
-                        to={this.props.to}
+                        tt={this.props.tt}
                     />
                 }
             </section>

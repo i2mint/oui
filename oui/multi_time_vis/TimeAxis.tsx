@@ -15,10 +15,10 @@ const TICK_DURATIONS: any = {
 };
 
 interface IProps {
-    from: number;
+    bt: number;
     leftX: number;
     rightX: number;
-    to: number;
+    tt: number;
 }
 
 const majorTickFormat: string = 'h:mm';
@@ -42,16 +42,21 @@ export default class TimeAxis extends React.Component<IProps, null> {
         return TICK_DURATIONS.FIVE_MINUTES;
     }
 
-    setRef(ref: any): void {
+    setRef: (ref: any) => void = (ref: any) => {
         this.element = ref;
     }
 
-    getTicks(
+    getTicks: (
         startRatio: number,
         tickWidthRatio: number,
         currentMoment: moment.Moment,
         tickDurationMs: number,
-    ): JSX.Element[] {
+    ) => JSX.Element[] = (
+        startRatio: number,
+        tickWidthRatio: number,
+        currentMoment: moment.Moment,
+        tickDurationMs: number,
+    ) => {
         const ticks: JSX.Element[] = [];
         let currentRatio: number = startRatio;
         const width: string = `${tickWidthRatio * 100}%`;
@@ -83,10 +88,10 @@ export default class TimeAxis extends React.Component<IProps, null> {
     }
 
     render() {
-        const totalDuration: number = this.props.to - this.props.from;
+        const totalDuration: number = this.props.tt - this.props.bt;
         const durationRatio: number = this.props.rightX - this.props.leftX;
         const displayDuration: number = totalDuration * durationRatio;
-        const displayStart: number = this.props.from + this.props.leftX * totalDuration;
+        const displayStart: number = this.props.bt + this.props.leftX * totalDuration;
         const tickDuration: number = this.getTickDuration(displayDuration);
         const tickWidthRatio: number = tickDuration / displayDuration;
         const firstTickOffset: number = tickDuration - displayStart % tickDuration;
