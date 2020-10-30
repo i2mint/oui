@@ -51,9 +51,8 @@ In the context of a notebook, most of the time, you'll just want to display it t
 jsobj
 ```
 
+![image](https://user-images.githubusercontent.com/1906276/97647554-cb258f00-1a0f-11eb-87d2-4732d47ee96b.png)
 
-
-    <IPython.core.display.Javascript object>
 
 
 It shows you a spectrogram by default (or, if the sound is too long, it will show you peaks instead).
@@ -87,11 +86,7 @@ assert isinstance(posix_path, PurePath)
 jsobj_of_audio(posix_path)
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
-
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
 
 
 ## A filepath (string)
@@ -107,10 +102,7 @@ assert isinstance(filepath, str) and os.path.isfile(filepath)
 jsobj_of_audio(filepath) 
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/97647620-f1e3c580-1a0f-11eb-9046-46f50b02bbd8.png)
 
 
 
@@ -123,10 +115,7 @@ assert isinstance(b, bytes)  # see, bytes, of the sort you'd get from a sensor
 jsobj_of_audio(b)
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
 
 
 
@@ -143,11 +132,7 @@ wf, sr = sf.read(filepath, dtype='int16')  # remember, the waveform sample need 
 jsobj_of_audio((wf, sr))  # note we specify wf and sr as a tuple of both, not wf and sr as two args of the function!
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
-
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
 
 
 
@@ -155,10 +140,7 @@ jsobj_of_audio((wf, sr))  # note we specify wf and sr as a tuple of both, not wf
 jsobj_of_audio(wf)  # if you don't specify sample rate wf, it will take sr=44100
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
 
 
 
@@ -167,10 +149,7 @@ jsobj_of_audio(wf)  # if you don't specify sample rate wf, it will take sr=44100
 jsobj_of_audio((wf, 10000))  # you can also specify a different sr too
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/97647680-1c358300-1a10-11eb-9144-d1fcc1e5d3b1.png)
 
 
 
@@ -179,10 +158,7 @@ jsobj_of_audio((wf, 10000))  # you can also specify a different sr too
 jsobj_of_audio((wf, 80000))  # you can also specify a different sr too
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/97647693-26578180-1a10-11eb-8a1a-257a24d9a678.png)
 
 
 
@@ -193,8 +169,7 @@ jsobj_of_audio((wf, 80000))  # you can also specify a different sr too
 jsobj_of_audio(wf, title='a title!', height=200)
 ```
 
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/97647717-340d0700-1a10-11eb-865d-6fc08ff9eeda.png)
 
 
 
@@ -202,13 +177,11 @@ jsobj_of_audio(wf, title='a title!', height=200)
 jsobj_of_audio(wf, chart_type='peaks', title='a title!', subtitle='subtitle', height=150)
 ```
 
-
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/97647731-3cfdd880-1a10-11eb-84a6-1d42aa3e300a.png)
 
 
 
-## Class `TimeChannel`
+# Class `TimeChannel`
 
 Renders a single-row visualization.
 
@@ -243,7 +216,7 @@ Advanced props
 * __hideTooltips__ Disables hover tooltips for data charts
 
 
-### Interface `AudioChannel`
+## Interface `AudioChannel`
 
 An object representing an audio visualization.
 
@@ -260,7 +233,7 @@ Optional keys:
 * __tt__ The start timestamp of the audio, in microseconds, if different bt the TimeChannel element
 * __windowSize__ The width of windows used for calculating signal peaks when drawing a peaks diagram.
 
-### Interface `DataChannel`
+## Interface `DataChannel`
 
 An object representing a time series visualization.
 
@@ -278,7 +251,7 @@ Optional keys:
 * __renderTooltip__ A function that takes a timestamp in microseconds (based on the position of the mouse cursor) and returns a renderable element (a string or JSX element) to display in a tooltip
 
 
-### Interface `WinnersChannel`
+## Interface `WinnersChannel`
 
 An object representing a visualization with two or more rows displaying the highest value for each point in time.
 
@@ -293,7 +266,7 @@ Optional keys:
 * __image__ A pre-drawn image data URL for the chart
 
 
-### Interface `Timerange` for annotation overlays
+## Interface `Timerange` for annotation overlays
 
 * __bt__ Start time in microseconds
 * __tt__ End time in microseconds
@@ -301,7 +274,7 @@ Optional keys:
 * __highlighted__ (optional) A boolean value to add additional emphasis to the element.
 
 
-### Interface `DataPoint` for time series data
+## Interface `DataPoint` for time series data
 
 Data points must either have both __bt__ and __tt__, or __time__
 
@@ -311,13 +284,13 @@ Data points must either have both __bt__ and __tt__, or __time__
 * __value__ Any value (should be numeric for a bargraph)
 
 
-### Interface `WinnerDataPoint` for category winner time series data
+## Interface `WinnerDataPoint` for category winner time series data
 
 * __time__ Point in time in microseconds (display width will be determined by the prop `params.chunkSize` passed to the TimeChannel, defaulting to 972ms)
 * __winner__ The category that won this point in time (may be null)
 
 
-## CSS classes
+# CSS classes
 
 * __otv--vis-channel__ The outermost container of TimeChannel
 * __otv--channel-title__ The title displayed above the chart
@@ -331,7 +304,7 @@ Data points must either have both __bt__ and __tt__, or __time__
 * __otv--tooltip__ The tooltip for data channels
 
 
-## TODO
+# TODO
 
 * Support (bt, tt) for winners
 * Add CSS
