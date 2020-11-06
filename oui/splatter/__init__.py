@@ -31,9 +31,19 @@ def assert_jsonizable(d):
     _ = json.dumps(d)
     return True
 
+
 # @Sig.from_objs('pts', dflts.items(), assert_same_sized_fvs=True)
 # def mysplatter():
 #     pass
+
+def _is_sklearn_xy_pair(x):
+    """Determines (well, infers/guesses) if x is an (X, y) pair that sklearn likes to take."""
+    return (
+            isinstance(x, tuple)  # is a tuple
+            and len(x) == 2  # ... with 2 elements
+            and len(x[0]) == len(x[1])  # ... of the same length
+    )
+
 
 def process_pts(pts):
     """Get a normalize form for pts.
@@ -55,6 +65,8 @@ def process_pts(pts):
     :param pts: Some form of pts
     :return: A normalize "list-of-dicts" form of pts, with dicts being at least
     """
+    if _is_sklearn_xy_pair(pts):
+        pts = [dict(tag=yy, fv=xx) for xx, yy in zip(*pts)]
     if not isinstance(pts, Mapping):
         # pts is a list(-like)
         for pt in pts:
