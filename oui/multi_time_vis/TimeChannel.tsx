@@ -9,7 +9,7 @@ import {
     createWinnersChart,
     drawSpectrogram,
     drawWaveform,
-    DEFAULT_CHUNK_SIZE_MCS,
+    DFLT_CHK_SIZE_MCS,
     DEFAULT_WINDOW_SIZE,
     getNFactor,
 } from './processing';
@@ -36,13 +36,13 @@ export interface AudioChannel {
     buffer?: ArrayBuffer;
     chartType?: string;
     closable?: boolean;
-    from?: number;
+    bt?: number;
     image?: string;
     onClose?: () => void;
     normalize?: boolean;
     subtitle?: string;
     title?: string;
-    to?: number;
+    tt?: number;
     type: 'audio';
     url?: string;
     windowSize?: number;
@@ -53,11 +53,12 @@ export interface DataChannel {
     bargraphMax?: number;
     bargraphMin?: number;
     chartType?: string;
+    chunkSize?: number;
     closable?: boolean;
     data: DataPoint[];
     filterParams?: any;
     filters?: ((filterParams: any, data: DataPoint[]) => DataPoint[])[];
-    from?: number;
+    bt?: number;
     getColor?: (value: any) => string;
     hash?: string;
     image?: string;
@@ -65,7 +66,7 @@ export interface DataChannel {
     renderTooltip?: (bt: number) => JSX.Element;
     subtitle?: string;
     title?: string;
-    to?: number;
+    tt?: number;
     type: 'data';
     [fieldName: string]: any;
 }
@@ -76,24 +77,24 @@ export interface WinnersChannel {
     closable?: boolean;
     color?: string;
     data: WinnerDataPoint[];
-    from?: number;
+    bt?: number;
     image?: string;
     onClose?: () => void;
     subtitle?: string;
     title?: string;
-    to?: number;
+    tt?: number;
     type: 'data';
     [fieldName: string]: any;
 }
 
 interface RequiredProps {
     channel: DataChannel | AudioChannel | WinnersChannel;
-    from: number;
-    to: number;
+    bt: number;
+    tt: number;
 }
 
 interface IProps extends RequiredProps {
-    activeSelection?: { from: number, to: number };
+    activeSelection?: { bt: number, tt: number };
     annotations?: Timerange[];
     chartType?: string;
     contextMenuHandler?: (e: any) => void;
@@ -227,8 +228,8 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
         const zoomedRatio: number = (e.pageX - rect.left) / rect.width;
         const viewRatio: number = this.rightX - this.leftX;
         const unzoomedRatio: number = zoomedRatio * viewRatio + this.leftX;
-        const btOffset: number = unzoomedRatio * (this.props.to - this.props.from);
-        const bt: number = btOffset + this.props.from;
+        const btOffset: number = unzoomedRatio * (this.props.tt - this.props.bt);
+        const bt: number = btOffset + this.props.bt;
         const tooltipItem: JSX.Element = channel.renderTooltip(bt);
         if (!tooltipItem) {
             return;
@@ -282,8 +283,9 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
     }
 
     createImage: (props: IProps) => void = (props: IProps) => {
-        const chunkSize: number = this.props.params ? this.props.params.chunkSize :
-            DEFAULT_CHUNK_SIZE_MCS;
+        const chunkSize: number = this.props.channel.chunkSize ||
+            this.props.params ? this.props.params.chunkSize :
+            DFLT_CHK_SIZE_MCS;
         const chartType: string = props.channel.chartType || props.chartType;
         let image: string = '';
         switch (chartType) {
@@ -299,8 +301,8 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
             case 'heatmap':
                 image = createHeatmap(
                     props.channel as DataChannel,
-                    props.from,
-                    props.to,
+                    props.bt,
+                    props.tt,
                     chunkSize);
                 break;
             case 'winners':
@@ -308,8 +310,8 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
                 if (channel.categories.length) {
                     image = createWinnersChart(
                         props.channel as WinnersChannel,
-                        props.from,
-                        props.to,
+                        props.bt,
+                        props.tt,
                         props.height / channel.categories.length,
                         chunkSize);
                 }
@@ -318,8 +320,8 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
             default:
                 image = createBargraph(
                     props.channel as DataChannel,
-                    props.from,
-                    props.to,
+                    props.bt,
+                    props.tt,
                     chunkSize);
         }
         this.setState({ image });
@@ -375,7 +377,7 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
             return;
         }
         this.soundUtils.onEnded = this.stopIndicator;
-        const startOffset: number = this.indicatorX * ((this.props.to - this.props.from) / 1000);
+        const startOffset: number = this.indicatorX * ((this.props.tt - this.props.bt) / 1000);
         this._playing = true;
         this.soundUtils.play(startOffset);
         this.scrollIndicator();
@@ -400,14 +402,14 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
     }
 
     scrollIndicator: VoidFunction = () => {
-        const duration: number = this.props.to - this.props.from;
+        const duration: number = this.props.tt - this.props.bt;
         let progressMs: number = this.state.indicatorX * duration / 1000;
         let now: number = performance.now();
         const scroll: VoidFunction = () => {
             const newNow: number = performance.now();
             const delta: number = newNow - now;
             progressMs += delta;
-            const indicatorX: number = progressMs / ((this.props.to - this.props.from) / 1000);
+            const indicatorX: number = progressMs / ((this.props.tt - this.props.bt) / 1000);
             this.setState({ indicatorX });
             now = newNow;
         };
@@ -463,19 +465,19 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
 
     renderSelection: (selection: SelectedRange & Timerange) => JSX.Element =
         (selection: SelectedRange & Timerange) => {
-        let fromRatio: number = selection.from;
-        let toRatio: number = selection.to;
+        let fromRatio: number = selection.bt;
+        let toRatio: number = selection.tt;
         if (!fromRatio) {
             if (!selection.bt) {
                 return null;
             }
-            fromRatio = (selection.bt - this.props.from) / (this.props.to - this.props.from);
+            fromRatio = (selection.bt - this.props.bt) / (this.props.tt - this.props.bt);
         }
         if (!toRatio) {
             if (!selection.tt) {
                 return null;
             }
-            toRatio = (selection.tt - this.props.from) / (this.props.to - this.props.from);
+            toRatio = (selection.tt - this.props.bt) / (this.props.tt - this.props.bt);
         }
         if (fromRatio > this.rightX || toRatio < this.leftX) {
             return null;
@@ -554,17 +556,19 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
         }
         let channelLeft: string;
         let channelWidth: string;
-        const channelFrom: number = channel.from || this.props.from;
-        const channelTo: number = channel.to || this.props.to;
-        const channelDurationMcs: number = this.props.to - this.props.from;
-        const displayFromMcs: number = this.leftX * channelDurationMcs + this.props.from;
-        const displayToMcs: number = this.rightX * channelDurationMcs + this.props.from;
+        const visFrom: number = this.props.bt || channel.bt;
+        const visTo: number = this.props.tt || channel.tt;
+        const channelFrom: number = channel.bt || this.props.bt;
+        const channelTo: number = channel.tt || this.props.tt;
+        const channelDurationMcs: number = visTo - visFrom;
+        const displayFromMcs: number = this.leftX * channelDurationMcs + visFrom;
+        const displayToMcs: number = this.rightX * channelDurationMcs + visFrom;
         const displayDurationMcs: number = Math.max(displayToMcs - displayFromMcs, 1);
         if (channel.type === 'audio') {
             channelLeft = (channelFrom - displayFromMcs) / displayDurationMcs * 100 + '%';
             channelWidth = (channelTo - channelFrom) / displayDurationMcs * 100 + '%';
         } else {
-            channelLeft = (this.props.from - displayFromMcs) / displayDurationMcs * 100 + '%';
+            channelLeft = (this.props.bt - displayFromMcs) / displayDurationMcs * 100 + '%';
             channelWidth = channelDurationMcs / displayDurationMcs * 100 + '%';
         }
         const height: number = this.props.height || 50;
@@ -637,10 +641,10 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
                             <div
                                 style={{
                                     color: '#000',
-                                    left: `${Math.min(this.props.activeSelection.from, this.props.activeSelection.to)
+                                    left: `${Math.min(this.props.activeSelection.bt, this.props.activeSelection.tt)
                                         * 100}%`,
-                                    width: `${Math.abs(this.props.activeSelection.to -
-                                        this.props.activeSelection.from) * 100}%`,
+                                    width: `${Math.abs(this.props.activeSelection.tt -
+                                        this.props.activeSelection.bt) * 100}%`,
                                 }}
                                 className={`otv--selection otv--highlighted ${this.props.negativeRange ? 'otv--negative-range' : ''}`}
                             />

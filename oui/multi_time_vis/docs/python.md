@@ -2,7 +2,7 @@
 
 ## `single_time_vis` examples
 
-Render a spectrogram. Double-click to play or stop.
+Render a spectrogram. Double-click to play, single-click to stop.
 
 The difference between `bt` and `tt` must equal the actual duration of the sound file for the progress indicator to render correctly.
 ```python
@@ -11,7 +11,6 @@ bt = 0
 tt = 6500000
 audio_channel = {
     'chartType': 'spectrogram',
-    'type': 'audio',
     'url': 'https://otosense.analogcloudsandbox.io/static/wav/pcm1644m.wav',
 }
 single_time_vis(audio_channel, bt, tt, height=200)
@@ -25,7 +24,6 @@ bt = 0
 tt = 6500000
 wave_channel = {
     'chartType': 'peaks',
-    'type': 'audio',
     'url': 'https://otosense.analogcloudsandbox.io/static/wav/pcm1644m.wav',
 }
 single_time_vis(wave_channel, bt, tt, height=50)
@@ -46,7 +44,6 @@ data_channel = {
     'bargraphMin': 0,
     'bargraphMax': 1,
     'data': mock_data,
-    'type': 'data'
 }
 single_time_vis(data_channel, bt=0, tt=mcs_per_chunk * 200, height=100)
 ```
@@ -66,7 +63,6 @@ winners_channel = {
     'categories': categories,
     'chartType': 'winners',
     'data': mock_winners,
-    'type': 'data'
 }
 single_time_vis(winners_channel, bt=0, tt = mcs_per_chunk * 200, height=60)
 ```
@@ -95,8 +91,7 @@ filename = '~/audio/example_file.wav'
 wf, sr = soundfile.read(filename, dtype='int16')
 channel = {
     'chartType': 'peaks',
-    'type': 'audio',
-    'buffer': list(wf),
+    'wf': list(wf),
     'sr': sr
 }
 bt = 0

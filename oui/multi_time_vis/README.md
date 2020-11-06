@@ -1,13 +1,194 @@
 # OtoSense time visualizations
 
-## Class `TimeChannel`
+
+# Basics: jsobj_of_audio
+
+jsobj_of_audio is a convenience function to get a (ipython) javascript object from various (single channgle) audio sources.
+
+Let's first make a simple pure tone waveform to try it out.
+
+
+```python
+from numpy import sin, arange, pi
+
+n_samples = 21 * 2048
+sr = 44100
+freq = 220
+wf = sin(arange(n_samples) * 2 * pi * freq / sr)
+wf = (30000 * wf).astype('int16')  # because the waveform samples need to be of the int16 type.
+```
+
+
+```python
+from oui.multi_time_vis import jsobj_of_audio
+
+jsobj = jsobj_of_audio(wf)
+print(f"This jsobj is a {type(jsobj)}")
+```
+
+
+    <IPython.core.display.Javascript object>
+
+
+    This jsobj is a <class 'IPython.core.display.Javascript'>
+
+
+That jsobj contains, of course, some javascript object. Let's print just the beginning of it:
+
+
+
+```python
+print(jsobj.data[:99] + '...')
+```
+
+    renderTimeChannel(element.get(0), {'type': 'audio', 'wf': [0, 940, 1879, 2816, 3751, 4682, 5608, 65...
+
+
+In the context of a notebook, most of the time, you'll just want to display it to "use" it.
+
+
+```python
+jsobj
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647554-cb258f00-1a0f-11eb-87d2-4732d47ee96b.png)
+
+
+
+It shows you a spectrogram by default (or, if the sound is too long, it will show you peaks instead).
+
+You can double click on the viz to play the sound from the place you clicked. 
+
+You can (single) click on the viz again to stop the playing.
+
+## Various waveform input formats
+
+
+```python
+from oui.multi_time_vis import jsobj_of_audio
+```
+
+We'll need a path to test this out. We'll take the test one, but you can try your own:
+
+
+```python
+from oui.multi_time_vis.test import dpath
+
+posix_path = dpath('baby_voice.wav')
+```
+
+### A pathlib path object (if you're into that thing)
+
+
+```python
+from pathlib import PurePath
+assert isinstance(posix_path, PurePath)
+jsobj_of_audio(posix_path)
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
+
+
+## A filepath (string)
+
+Note here that if you don't specify a title, it will use the file (base) name
+
+
+```python
+import os
+
+filepath = str(posix_path)  # the full path to the wav file
+assert isinstance(filepath, str) and os.path.isfile(filepath)
+jsobj_of_audio(filepath) 
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647620-f1e3c580-1a0f-11eb-9046-46f50b02bbd8.png)
+
+
+
+## bytes
+
+
+```python
+b = posix_path.read_bytes()
+assert isinstance(b, bytes)  # see, bytes, of the sort you'd get from a sensor
+jsobj_of_audio(b)
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
+
+
+
+## waveform (array of samples)
+
+
+```python
+import soundfile as sf
+wf, sr = sf.read(filepath, dtype='int16')  # remember, the waveform sample need to be of the int16 type.
+```
+
+
+```python
+jsobj_of_audio((wf, sr))  # note we specify wf and sr as a tuple of both, not wf and sr as two args of the function!
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
+
+
+
+```python
+jsobj_of_audio(wf)  # if you don't specify sample rate wf, it will take sr=44100
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647602-e7c1c700-1a0f-11eb-9023-8fbee798b36d.png)
+
+
+
+
+```python
+jsobj_of_audio((wf, 10000))  # you can also specify a different sr too
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647680-1c358300-1a10-11eb-9144-d1fcc1e5d3b1.png)
+
+
+
+
+```python
+jsobj_of_audio((wf, 80000))  # you can also specify a different sr too
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647693-26578180-1a10-11eb-8a1a-257a24d9a678.png)
+
+
+
+## viz options
+
+
+```python
+jsobj_of_audio(wf, title='a title!', height=200)
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647717-340d0700-1a10-11eb-865d-6fc08ff9eeda.png)
+
+
+
+```python
+jsobj_of_audio(wf, chart_type='peaks', title='a title!', subtitle='subtitle', height=150)
+```
+
+![image](https://user-images.githubusercontent.com/1906276/97647731-3cfdd880-1a10-11eb-84a6-1d42aa3e300a.png)
+
+
+
+# Class `TimeChannel`
 
 Renders a single-row visualization.
 
 Required props:
 * __channel__ An `AudioChannel`, `DataChannel`, or `WinnersChannel` containing the data to render
-* __from__ The start timestamp of the channel, in microseconds.
-* __to__ The end timestamp of the channel, in microsedonds.
+* __bt__ The start timestamp of the channel, in microseconds.
+* __tt__ The end timestamp of the channel, in microsedonds.
 
 Optional props:
 * __annotations__ An array of `Timerange` objects to render as overlays on the chart.
@@ -35,7 +216,7 @@ Advanced props
 * __hideTooltips__ Disables hover tooltips for data charts
 
 
-### Interface `AudioChannel`
+## Interface `AudioChannel`
 
 An object representing an audio visualization.
 
@@ -48,11 +229,11 @@ Either one of these keys is required (not all three):
 * __image__ A pre-drawn image data URL
 
 Optional keys:
-* __from__ The start timestamp of the audio, in microseconds, if different from the TimeChannel element
-* __to__ The start timestamp of the audio, in microseconds, if different from the TimeChannel element
+* __bt__ The start timestamp of the audio, in microseconds, if different bt the TimeChannel element
+* __tt__ The start timestamp of the audio, in microseconds, if different bt the TimeChannel element
 * __windowSize__ The width of windows used for calculating signal peaks when drawing a peaks diagram.
 
-### Interface `DataChannel`
+## Interface `DataChannel`
 
 An object representing a time series visualization.
 
@@ -70,7 +251,7 @@ Optional keys:
 * __renderTooltip__ A function that takes a timestamp in microseconds (based on the position of the mouse cursor) and returns a renderable element (a string or JSX element) to display in a tooltip
 
 
-### Interface `WinnersChannel`
+## Interface `WinnersChannel`
 
 An object representing a visualization with two or more rows displaying the highest value for each point in time.
 
@@ -85,7 +266,7 @@ Optional keys:
 * __image__ A pre-drawn image data URL for the chart
 
 
-### Interface `Timerange` for annotation overlays
+## Interface `Timerange` for annotation overlays
 
 * __bt__ Start time in microseconds
 * __tt__ End time in microseconds
@@ -93,7 +274,7 @@ Optional keys:
 * __highlighted__ (optional) A boolean value to add additional emphasis to the element.
 
 
-### Interface `DataPoint` for time series data
+## Interface `DataPoint` for time series data
 
 Data points must either have both __bt__ and __tt__, or __time__
 
@@ -103,13 +284,13 @@ Data points must either have both __bt__ and __tt__, or __time__
 * __value__ Any value (should be numeric for a bargraph)
 
 
-### Interface `WinnerDataPoint` for category winner time series data
+## Interface `WinnerDataPoint` for category winner time series data
 
 * __time__ Point in time in microseconds (display width will be determined by the prop `params.chunkSize` passed to the TimeChannel, defaulting to 972ms)
 * __winner__ The category that won this point in time (may be null)
 
 
-## CSS classes
+# CSS classes
 
 * __otv--vis-channel__ The outermost container of TimeChannel
 * __otv--channel-title__ The title displayed above the chart
@@ -123,7 +304,7 @@ Data points must either have both __bt__ and __tt__, or __time__
 * __otv--tooltip__ The tooltip for data channels
 
 
-## TODO
+# TODO
 
 * Support (bt, tt) for winners
 * Add CSS

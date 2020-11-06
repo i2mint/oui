@@ -8,6 +8,8 @@ const blob = new Blob([fftWorkerCode], { type: 'application/javascript'});
 const url: any = window['URL'] || window['webkitURL'];
 const blobUrl: string = url.createObjectURL(blob);
 
+export const DFLT_SR: number = 44100;
+
 export default class SoundUtility {
     interruptWorkers: boolean = false;
     workers: Set<Worker> = new Set();
@@ -167,4 +169,9 @@ export function generateWAVHeader(sr: number, bit_depth: number, bufferSize: num
     // bytes 41-44: audio data size
     view.setUint32(40, bufferSize, true);
     return new Uint8Array(arrayBuffer);
+}
+
+export function bytesToMcs(bytes: number, bit_depth: number, sr: number): number {
+    const samples: number = bytes / (bit_depth / 8);
+    return (samples / sr) * 1000000;
 }
