@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const sourcePath = path.join(__dirname, './oui');
 const outPath = path.join(__dirname, './oui/js');
@@ -11,12 +12,12 @@ module.exports = {
     // },
     context: sourcePath,
     entry: {
-        main: './index.ts',
+        main: './examples.tsx',
     },
     output: {
         path: outPath,
         publicPath: '/',
-        filename: 'index.js',
+        filename: 'examples.js',
     },
     target: 'web',
     resolve: {
@@ -39,7 +40,12 @@ module.exports = {
         //     loader: 'json-loader',
         }],
     },
-    plugins: [],
+    plugins: [
+        new HtmlWebpackPlugin({
+            hash: true,
+            template: 'index.html',
+        }),
+    ],
     devServer: {
         contentBase: sourcePath,
         watchContentBase: true,
