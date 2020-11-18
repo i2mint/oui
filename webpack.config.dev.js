@@ -6,9 +6,12 @@ const sourcePath = path.join(__dirname, './oui');
 const outPath = path.join(__dirname, './oui/js');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     // optimization: {
     //     minimize: false,
+    // },
+    // node: {
+    //     'image-size': false
     // },
     context: sourcePath,
     entry: {
@@ -32,6 +35,9 @@ module.exports = {
         // }, {
             test: /\.tsx?$/,
             use: ['awesome-typescript-loader'],
+        // }, {
+        //     test: /\.js$/,
+        //     use: ['ify-loader'],
         }, {
             test: /\.s?css$/,
             use: ['style-loader', 'css-loader', 'sass-loader'],

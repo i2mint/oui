@@ -5,7 +5,7 @@ const sourcePath = path.join(__dirname, './oui');
 const outPath = path.join(__dirname, './oui/js');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     // optimization: {
     //     minimize: false,
     // },
