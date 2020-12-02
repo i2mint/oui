@@ -24,7 +24,7 @@ export class Splatter {
     defaultTsneOptions;
     options: any = {
         defaultColor: '#777',
-        nodeSize: 2,
+        nodeSize: 6,
     };
     tsneOptions;
     centerx;
