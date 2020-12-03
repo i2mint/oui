@@ -2,6 +2,8 @@ import io
 import os
 from pathlib import PurePath
 from typing import Iterable
+import numpy as np
+
 from oui.multi_time_vis.base import single_time_vis
 
 CHANNEL_TYPES = ['audio', 'data']
@@ -67,18 +69,20 @@ def wfsr_to_jsobj(
         params=DFLT_PARAMS,
         title=None,
         subtitle='',
+        int_normalizing_factor=30000,
         **kwargs):
     """Make a (jupyter displayable) jsobj from a (waveform, sample rate)  or just waveform source
 
-    :param src
-    :param wf: Waveform. An iterable of ints
-    :param sr: Sample rate. An int.
+    :param src:
+        A waveform wf (iterable of numbers)
+        A (wf, sr) pair, where sr is the sample rate (if only wf is given, sr will be taken to be a default)
     :param chart_type: The chart type to render, either 'peaks' (default) or 'spectrogram'
     :param enable_playback: Whether to enable playback on double click (default True)
     :param height: The height of the chart in pixels (default 50)
     :param params: Extra rendering parameters, currently unused
     :param title: The title to display, defaults to the filename
     :param subtitle: An optional subtitle to display under the title
+    :param int_normalizing_factor: Used (as the max abs value to normalize to) if waveform is not a numpy.int16.
     :param kwargs: extra kwargs to be passed on to Javascript object constructor
     :return:
     """
@@ -87,6 +91,10 @@ def wfsr_to_jsobj(
     else:
         wf = src
         sr = DFLT_SR
+    if len(wf) > 0:
+        if np.dtype(wf[0]) != np.int16:
+            wf = np.array(wf)
+            wf = (int_normalizing_factor * wf / max(abs(wf))).astype(np.int16)
     if chart_type is None:
         if len(wf) > MAX_WF_LEN_FOR_SPECTROGRAMS:
             chart_type = 'peaks'
