@@ -62,7 +62,7 @@ Let's have a look at a minimal example containing five tagged points
 
 
 ```python
-from ui_components.splatter import splatter_raw
+from oui.splatter import splatter_raw
 
 pts = [
     {'fv': [1, 2, 3], 'tag': 'foo'},
@@ -98,8 +98,7 @@ splatter_raw(pts, untaggedColor='#444', nodeSize=3)
 
 
 
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/108549981-c62c6a00-72a2-11eb-9476-d4a58a6a84a8.png)
 
 
 
@@ -123,35 +122,28 @@ See that you can make the figure box and nodes (points) bigger. Units are in pix
 
 ```python
 import numpy as np
-from ui_components.splatter import _splatter
+from oui.splatter import _splatter
 
 pts = [{'fv': fv.tolist()} for fv in np.random.rand(100, 3)]
 splatter_raw(pts, nodeSize=2, height=300, width=200)
 ```
 
 
-
-
-    <IPython.core.display.Javascript object>
-
+![image](https://user-images.githubusercontent.com/1906276/108550052-dba19400-72a2-11eb-8572-bf8a95706b49.png)
 
 
 Know, in case it ever matters, that even splatter_raw is a thin layer over `_splatter(pts, options)`, which is the actual one forwarding to JS. We stuck `spatter_raw` on top so that we could give details of the `options` arguments and do some validation. 
 
 
 ```python
-from ui_components.splatter import _splatter
+from oui.splatter import _splatter
 _splatter(pts=pts, options=dict(nodeSize=2, height=300, width=200))
 ```
 
 
+![image](https://user-images.githubusercontent.com/1906276/108550140-fe33ad00-72a2-11eb-9b9f-88dac9f07eb2.png)
 
 
-    <IPython.core.display.Javascript object>
-
-
-
-See [issue](http://git.otosense.ai/thor/ui_components/issues/6) about bounding boxes.
 
 # splatter: An interface that does more for you
 
@@ -161,7 +153,7 @@ Above `splatter_raw` is a convenience function called `splatter`. It's the one y
 ```python
 import numpy as np
 from inspect import signature
-from ui_components.splatter import splatter
+from oui.splatter import splatter
 
 signature(splatter)
 ```
@@ -195,8 +187,7 @@ splatter(pts)
 
 
 
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/108550211-199eb800-72a3-11eb-8425-fcd7674ab419.png)
 
 
 
@@ -215,9 +206,8 @@ splatter(pts)
 ```
 
 
+![image](https://user-images.githubusercontent.com/1906276/108550263-2d4a1e80-72a3-11eb-810e-bd7f2b3d1b00.png)
 
-
-    <IPython.core.display.Javascript object>
 
 
 
@@ -235,10 +225,7 @@ pts = np.random.rand(100, 3)
 splatter(pts, figsize=100)
 ```
 
-
-
-
-    <IPython.core.display.Javascript object>
+![image](https://user-images.githubusercontent.com/1906276/108550302-3e932b00-72a3-11eb-94f5-d4ad7abe819b.png)
 
 
 
@@ -247,22 +234,9 @@ splatter(pts, figsize=100)
 splatter(pts, figsize=250)
 ```
 
+![image](https://user-images.githubusercontent.com/1906276/108550365-510d6480-72a3-11eb-9200-0feaa974b256.png)
 
 
-
-    <IPython.core.display.Javascript object>
-
-
-
-
-```python
-splatter(pts, figsize=(150, 80))
-```
-
-
-
-
-    <IPython.core.display.Javascript object>
 
 
 
@@ -345,7 +319,7 @@ Alternatively, you can use our little hex_color tool:
 
 
 ```python
-from ui_components.color_util import hex_color
+from oui.color_util import hex_color
 ```
 
 `hex_color` is a collection (meaning you can do things like `list(hex_color)`:
@@ -477,8 +451,8 @@ splatter(pts, fillColors={
 
 
 ```python
-from ui_components.splatter import splatter
-from ui_components.color_util import color_names_and_codes
+from oui.splatter import splatter
+from oui.color_util import color_names_and_codes
 import numpy as np
 
 # splatter(pts, fill_colors=final_df.hex.to_list(), node_size=0.03, figsize=400)
@@ -582,11 +556,3 @@ print(splatter_raw.__doc__)
         :param spread: TSNE parameter. See https://distill.pub/2016/misread-tsne/
         :return:
         
-
-
-
-```python
-
-```
-
-
