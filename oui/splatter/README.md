@@ -1,11 +1,12 @@
 
 A splatter of the [iris dataset](https://archive.ics.uci.edu/ml/datasets/iris):
 
+![image](https://github.com/otosense/oui/blob/master/oui/data/img/iris.gif)
 
 
 A splatter of the [handwritten digits dataset](https://archive.ics.uci.edu/ml/datasets/Pen-Based+Recognition+of+Handwritten+Digits):
 
-
+![image](https://github.com/otosense/oui/blob/master/oui/data/img/digits.gif)
 
 - [Hello splatters](#hello-splatters)
   * [splatter_raw](#splatter-raw)
