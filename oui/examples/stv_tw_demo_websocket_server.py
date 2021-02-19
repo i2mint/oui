@@ -14,11 +14,11 @@ def get_random_data(timestamp):
     return random()
 
 
-def mytrans(ts, cycle_seconds=3, factor=1/3, trans=lambda x: x):
+def mytrans(ts, cycle_seconds=3, factor=1 / 3, trans=lambda x: x):
     return trans(factor * ((ts / cycle_seconds) % cycle_seconds))
 
 
-def myclock(cycle_seconds=3, factor=1/3, trans=lambda x: x):
+def myclock(cycle_seconds=3, factor=1 / 3, trans=lambda x: x):
     return mytrans(time(), cycle_seconds=cycle_seconds, factor=factor, trans=trans)
 
 
@@ -34,6 +34,8 @@ def cycler(iterable):
 
 dflt_data_getter = get_random_data
 dflt_data_getter = myclock
+
+
 # dflt_data_getter = cycler([0.1, 0.5, 0.9])
 
 
@@ -52,9 +54,13 @@ def stream_data_socket(ws, data_getter=get_random_data, pause_for=0.5, log_sends
         sleep(pause_for)
 
 
-if __name__ == "__main__":
+def launch_service(port=3001):
     from gevent import pywsgi
     from geventwebsocket.handler import WebSocketHandler
 
-    server = pywsgi.WSGIServer(('', 3001), app, handler_class=WebSocketHandler)
+    server = pywsgi.WSGIServer(('', port), app, handler_class=WebSocketHandler)
     server.serve_forever()
+
+
+if __name__ == "__main__":
+    launch_service()
