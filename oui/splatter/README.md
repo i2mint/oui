@@ -1,3 +1,12 @@
+
+A splatter of the [iris dataset](https://archive.ics.uci.edu/ml/datasets/iris):
+
+
+
+A splatter of the [handwritten digits dataset](https://archive.ics.uci.edu/ml/datasets/Pen-Based+Recognition+of+Handwritten+Digits):
+
+
+
 - [Hello splatters](#hello-splatters)
   * [splatter_raw](#splatter-raw)
 - [splatter: An interface that does more for you](#splatter--an-interface-that-does-more-for-you)
