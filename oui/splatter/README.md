@@ -63,7 +63,7 @@ pts = [
 splatter_raw(pts)
 ```
 
-![image](/uploads/7353f280cca416f988c98c4be26f65bd/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108547276-202b3080-729f-11eb-9abe-c3ff221a8e7f.png)
 
 
 
@@ -270,7 +270,8 @@ splatter(pts, nodeSize=0.06, figsize=250)
 ```
 
 
-![image](/uploads/53420f2215a2ab35b1fbd48017545402/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108546928-ae52e700-729e-11eb-8953-01ca7f46e6c4.png)
+
 
 
 
@@ -281,8 +282,7 @@ But know that you can still use `nodeSize` in the pixels unit as JS does. `splat
 splatter(pts, nodeSize=0.19, figsize=150)
 ```
 
-![image](/uploads/5412ede0a9bea59c14b9e1266a5813d8/image.png)
-
+![image](https://user-images.githubusercontent.com/1906276/108546974-bd399980-729e-11eb-8444-a275ed9f4fe5.png)
 
 
 
@@ -292,7 +292,8 @@ splatter(pts, nodeSize=0.2, figsize=150)
 ```
 
 
-![image](/uploads/0d5be1725c92af9680490ff34f2399a2/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108547007-c88cc500-729e-11eb-91db-3f4805cfc8b4.png)
+
 
 
 
@@ -307,7 +308,8 @@ splatter(pts, nodeSize=0.1, figsize=150, alpha=0.2)
 ```
 
 
-![image](/uploads/bc640f0f62b29d555ad90c7c3f82b186/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108547021-cc204c00-729e-11eb-98ee-f362704aca0b.png)
+
 
 
 You usually want to apply an alpha when you have a lot of points so that you can 
@@ -406,9 +408,7 @@ hc = hex_color
 splatter(pts)
 ```
 
-
-![image](/uploads/46a8a24338b7c83008a679d1ad197e35/image.png)
-
+![image](https://user-images.githubusercontent.com/1906276/108547081-dfcbb280-729e-11eb-8eb3-decea0e79bf9.png)
 
 
 
@@ -417,7 +417,7 @@ splatter(pts, fillColors=[hc.bisque, hc.blue_violet, hc.dark_khaki])
 ```
 
 
-![image](/uploads/c443ddd53ab2823b22832d3368ceda20/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108547113-ea864780-729e-11eb-8861-8a1fa1f336a0.png)
 
 
 
@@ -429,7 +429,8 @@ If you want to map specific tags to specific colors, you can do that by specifyi
 splatter(pts, fillColors={'use': hc.pink, 'the': hc.orchid, 'force': hc.gainsboro}, untaggedColor=hc.crimson)
 ```
 
-![image](/uploads/288b53efc864ccda25ddfa987e389cab/image.png)
+
+![image](https://user-images.githubusercontent.com/1906276/108547124-ef4afb80-729e-11eb-88a4-f650d7b1ca6f.png)
 
 
 
@@ -440,7 +441,8 @@ And that map doesn't have to be completely specified. We'll fill in the gaps wit
 splatter(pts, fillColors={'use': hc.pink}, untaggedColor=hc.crimson)
 ```
 
-![image](/uploads/4fceb776034cfac80d056b0d941f6876/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108547144-f5d97300-729e-11eb-86fd-05bfd6c8cbc0.png)
+
 
 
 You can also specify `untaggedColor` directly in `fillColors` by specifying a 
@@ -455,7 +457,8 @@ splatter(pts, fillColors={
     '':hc.crimson})
 ```
 
-![image](/uploads/b6c7a06a037ae45a7a932cebe354cf47/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108547165-fe31ae00-729e-11eb-82d4-22559eee20ed.png)
+
 
 
 # More
@@ -504,7 +507,7 @@ fillColors = {x['color']: x['hex'] for x in color_names_and_codes}
 splatter(pts, figsize=500, fillColors=fillColors)
 ```
 
-![image](/uploads/dd935fd12d4996045cf4d89fd3886552/image.png)
+![image](https://user-images.githubusercontent.com/1906276/108547181-04c02580-729f-11eb-8fc9-e7a54c97c204.png)
 
 
 Note that a good way to get a sense of how our splatter squeezes multi-dimensions into 2 dimensions is to splatter 2 dimensions only. You would think that it would just fix the points in their 2d location.
@@ -519,7 +522,9 @@ pts = [{'fv': x['dec'][1:], 'tag': x['color']} for x in color_names_and_codes]
 fillColors = {x['color']: x['hex'] for x in color_names_and_codes}
 splatter(pts, figsize=500, fillColors=fillColors)
 ```
-![image](/uploads/c0d2474992be4463f224b58ee0aeca72/image.png)
+
+
+![image](https://user-images.githubusercontent.com/1906276/108547192-0a1d7000-729f-11eb-816a-b0fa8007bd66.png)
 
 
 
