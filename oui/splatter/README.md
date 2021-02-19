@@ -62,7 +62,7 @@ Let's have a look at a minimal example containing five tagged points
 
 
 ```python
-from ui_components.splatter import splatter_raw
+from oui.splatter import splatter_raw
 
 pts = [
     {'fv': [1, 2, 3], 'tag': 'foo'},
@@ -123,7 +123,7 @@ See that you can make the figure box and nodes (points) bigger. Units are in pix
 
 ```python
 import numpy as np
-from ui_components.splatter import _splatter
+from oui.splatter import _splatter
 
 pts = [{'fv': fv.tolist()} for fv in np.random.rand(100, 3)]
 splatter_raw(pts, nodeSize=2, height=300, width=200)
@@ -140,7 +140,7 @@ Know, in case it ever matters, that even splatter_raw is a thin layer over `_spl
 
 
 ```python
-from ui_components.splatter import _splatter
+from oui.splatter import _splatter
 _splatter(pts=pts, options=dict(nodeSize=2, height=300, width=200))
 ```
 
@@ -151,8 +151,6 @@ _splatter(pts=pts, options=dict(nodeSize=2, height=300, width=200))
 
 
 
-See [issue](http://git.otosense.ai/thor/ui_components/issues/6) about bounding boxes.
-
 # splatter: An interface that does more for you
 
 Above `splatter_raw` is a convenience function called `splatter`. It's the one you'll use more of the time since it does more for you in the way of handling different data formats and preparing the data for you.
@@ -161,7 +159,7 @@ Above `splatter_raw` is a convenience function called `splatter`. It's the one y
 ```python
 import numpy as np
 from inspect import signature
-from ui_components.splatter import splatter
+from oui.splatter import splatter
 
 signature(splatter)
 ```
@@ -345,7 +343,7 @@ Alternatively, you can use our little hex_color tool:
 
 
 ```python
-from ui_components.color_util import hex_color
+from oui.color_util import hex_color
 ```
 
 `hex_color` is a collection (meaning you can do things like `list(hex_color)`:
@@ -477,8 +475,8 @@ splatter(pts, fillColors={
 
 
 ```python
-from ui_components.splatter import splatter
-from ui_components.color_util import color_names_and_codes
+from oui.splatter import splatter
+from oui.color_util import color_names_and_codes
 import numpy as np
 
 # splatter(pts, fill_colors=final_df.hex.to_list(), node_size=0.03, figsize=400)
