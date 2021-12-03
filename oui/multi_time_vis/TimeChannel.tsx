@@ -556,9 +556,9 @@ export default class TimeChannel extends React.Component<IProps, Partial<IState>
         }
         let channelLeft: string;
         let channelWidth: string;
-        const visFrom: number = this.props.bt || channel.bt;
+        const visFrom: number = this.props.bt || channel.bt || 0;
         const visTo: number = this.props.tt || channel.tt;
-        const channelFrom: number = channel.bt || this.props.bt;
+        const channelFrom: number = channel.bt || this.props.bt || 0;
         const channelTo: number = channel.tt || this.props.tt;
         const channelDurationMcs: number = visTo - visFrom;
         const displayFromMcs: number = this.leftX * channelDurationMcs + visFrom;

@@ -9,6 +9,8 @@ pjoin = lambda *p: os.path.join(pkg_root_dir, *p)
 js_filename = pjoin('js', 'index.js')
 with open(js_filename) as js_file:
     js_source = js_file.read()
+    print('loading js')
+    display(Javascript('window.otosense = {}'))
     display(Javascript(js_source))
 
 data_dirpath = pjoin('data')

@@ -24,9 +24,7 @@ export interface SelectedRange {
 interface RequiredProps {
     channels: (AudioChannel | DataChannel)[];
     bt: number;
-    leftX: number;
     params: any;
-    rightX: number;
     tt: number;
 }
 
@@ -35,6 +33,7 @@ interface IProps extends RequiredProps {
     blockKeyEvents?: boolean;
     channelControls?: { [channelName: string]: JSX.Element };
     chartType?: string;
+    clearOnOutsideClick?: boolean;
     contextMenuHandler?: (event: any) => void;
     deleteHighlightedRanges?: VoidFunction;
     clearSelection?: VoidFunction;
@@ -44,6 +43,7 @@ interface IProps extends RequiredProps {
     highlightKey?: string;
     highlightValue?: string;
     indicatorX?: number;
+    leftX?: number;
     maxScale?: number;
     onClick?: () => any;
     onSelect?: (startRatio: number, endRatio: number) => void;
@@ -54,12 +54,14 @@ interface IProps extends RequiredProps {
     renderHelpDialog?: () => JSX.Element;
     renderTooltip?: (item: DataPoint, channelIndex: number) => JSX.Element;
     revertScale?: VoidFunction;
+    rightX?: number;
     setLeftAndRight?: (leftX: number, rightX: number) => void;
     selectedIntervals?: SelectedRange[];
     selectionMenu?: JSX.Element;
     showTimeScale?: boolean;
     startPlayback?: (fromRatio: number) => void;
     stopPlayback?: VoidFunction;
+    suppressEvents?: boolean;
     togglePlayback?: VoidFunction;
     subtitle?: string;
     zoomable?: boolean;
@@ -71,7 +73,9 @@ interface IState {
     contextMenuVisible: boolean;
     helpDialog: boolean;
     hoverX: number;
+    leftX: number;
     negativeRange: { bt: number, tt: number };
+    rightX: number;
     selecting: boolean;
     selectionEnd: number;
     selectionRanges: { bt: number, tt: number }[];
@@ -92,6 +96,7 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
     element: HTMLDivElement;
     soundUtils: SoundUtility;
     root: any;
+    _zooming: boolean;
 
     constructor(props) {
         super(props);
@@ -101,7 +106,9 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
             contextMenuVisible: false,
             helpDialog: false,
             hoverX: null,
+            leftX: 0,
             negativeRange: null,
+            rightX: 1,
             selecting: false,
             selectionEnd: 0,
             selectionRanges: [],
@@ -150,10 +157,19 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
     updateScale: (leftX: number, rightX: number) => void = (leftX: number, rightX: number) => {
         if (this.props.setLeftAndRight) {
             this.props.setLeftAndRight(leftX, rightX);
+        } else {
+            this.setState({ leftX, rightX }, () => this._zooming = false);
         }
     }
 
-    handleOutsideClick: VoidFunction = () => {
+    handleOutsideClick: (click: MouseEvent) => void = (click: MouseEvent) => {
+        if (this.root.contains(click.target) || this.state.selecting) {
+            return;
+        }
+        this.setState({ contextMenuVisible: false });
+        if (this.props.clearOnOutsideClick) {
+            this.clearSelection();
+        }
         this.setState({ contextMenuVisible: false });
     }
 
@@ -191,13 +207,15 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
     handleDoubleClick: (e: React.SyntheticEvent<MouseEvent>) => void =
         (e: React.SyntheticEvent<MouseEvent>) => {
         const startFromRatio: number = this.findEventLocation(e.nativeEvent as MouseEvent);
-        const visibleRange: number = this.props.rightX - this.props.leftX;
-        const realRatio: number = startFromRatio * visibleRange + this.props.leftX;
+        const leftX: number = this.props.leftX || this.state.leftX;
+        const rightX: number = this.props.rightX || this.state.rightX;
+        const visibleRange: number = rightX - leftX;
+        const realRatio: number = startFromRatio * visibleRange + leftX;
         const found = _.find(this.props.selectedIntervals, (range: SelectedRange) => {
             return range.bt <= realRatio && range.tt >= realRatio;
         });
         if (found) {
-            this.props.startPlayback((found.bt - this.props.leftX) / visibleRange);
+            this.props.startPlayback((found.bt - leftX) / visibleRange);
         } else {
             this.props.startPlayback(startFromRatio);
         }
@@ -206,9 +224,13 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
     handleWheel: (e: React.SyntheticEvent<Event>) => void = (e: React.SyntheticEvent<Event>) => {
         const ne: WheelEvent = e.nativeEvent as WheelEvent;
         if (ne.shiftKey) {
+            if (this._zooming) {
+                return;
+            }
+            this._zooming = true;
             const left: number = this.findEventLocation(ne as MouseEvent);
-            let leftX: number = this.props.leftX;
-            let rightX: number = this.props.rightX;
+            let leftX: number = this.state.leftX || this.props.leftX;
+            let rightX: number = this.state.rightX || this.props.rightX;
             let scale: number = rightX - leftX;
             if (ne.deltaY > 0) {
                 if (scale >= this.props.maxScale) {
@@ -325,9 +347,11 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
         event.stopPropagation();
         const selectionStart: number = Math.min(this.state.selectionStart, this.state.selectionEnd);
         const selectionEnd: number = Math.max(this.state.selectionStart, this.state.selectionEnd);
-        const visibleRange: number = this.props.rightX - this.props.leftX;
-        const realSelectionStart: number = selectionStart * visibleRange + this.props.leftX;
-        const realSelectionEnd: number = selectionEnd * visibleRange + this.props.leftX;
+        const leftX: number = this.state.leftX || this.props.leftX;
+        const rightX: number = this.state.rightX || this.props.rightX;
+        const visibleRange: number = rightX - leftX;
+        const realSelectionStart: number = selectionStart * visibleRange + leftX;
+        const realSelectionEnd: number = selectionEnd * visibleRange + leftX;
         if (selectionStart === selectionEnd) {
             const found = _.find(this.props.selectedIntervals, (range: SelectedRange) => {
                 return range.bt <= realSelectionStart && range.tt >= realSelectionStart;
@@ -345,8 +369,8 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
             tt: Math.max(this.state.negativeRange.bt, this.state.negativeRange.tt),
         } : null;
         if (negative && this.props.onTrim) {
-            negative.bt = negative.bt * visibleRange + this.props.leftX;
-            negative.tt = negative.tt * visibleRange + this.props.leftX;
+            negative.bt = negative.bt * visibleRange + leftX;
+            negative.tt = negative.tt * visibleRange + leftX;
             this.props.onTrim(negative.bt, negative.tt);
         } else if (this.props.onSelect) {
             this.props.onSelect(realSelectionStart, realSelectionEnd);
@@ -355,6 +379,8 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
     }
 
     render() {
+        const leftX: number = this.state.leftX || this.props.leftX;
+        const rightX: number = this.state.rightX || this.props.rightX;
         return (
             <section
                 className="timeVis"
@@ -411,7 +437,7 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
                                     chartType={this.props.chartType || 'bargraph'}
                                     contextMenuHandler={this.props.contextMenuHandler}
                                     controlContainer={controls}
-                                    leftX={this.props.leftX}
+                                    leftX={leftX}
                                     key={channel.guid + channel.title}
                                     clickHandler={undefined}
                                     getAnnotationColor={this.props.getAnnotationColor}
@@ -426,7 +452,7 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
                                         this.props.selectionMenu : undefined}
                                     negativeRange={!!this.state.negativeRange}
                                     params={this.props.params}
-                                    rightX={this.props.rightX}
+                                    rightX={rightX}
                                     selections={this.props.selectedIntervals}
                                     selecting={this.state.selecting}
                                     setLeftAndRightHandler={this.handleSetLeftAndRight}
@@ -434,7 +460,7 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
                                     startSelecting={this.startSelecting}
                                     subtitle={index === 0 ? this.props.subtitle : undefined}
                                     suppressAudio
-                                    suppressEvents
+                                    suppressEvents={!!this.props.suppressEvents}
                                     tt={this.props.tt || channel.tt}
                                     zoomHandler={this.props.zoomable ? this.handleWheel : undefined}
                                 />
@@ -445,8 +471,8 @@ export default class MultiTimeVis extends React.Component<IProps, Partial<IState
                 {this.props.showTimeScale &&
                     <TimeAxis
                         bt={this.props.bt}
-                        leftX={this.props.leftX}
-                        rightX={this.props.rightX}
+                        leftX={leftX}
+                        rightX={rightX}
                         tt={this.props.tt}
                     />
                 }

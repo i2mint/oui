@@ -24,7 +24,7 @@ export function renderTimeChannel(
     channel: any,
     props: any
 ): void {
-    console.log('loaded OtoSense time visualization v0.2.0');
+    console.log('loaded OtoSense time visualization v0.2.2');
     const { enable_playback, height, params, title, subtitle } = props;
     if (props.bt && !channel.bt) {
         channel.bt = props.bt;
