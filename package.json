@@ -12,8 +12,6 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@syncfusion/ej2-react-navigations": "^18.1.54",
-    "@syncfusion/ej2-react-treegrid": "^18.1.54",
     "chroma-js": "^2.1.0",
     "d3": "^5.16.0",
     "lodash": "^4.17.19",
