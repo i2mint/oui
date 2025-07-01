@@ -36,12 +36,13 @@ def assert_jsonizable(d):
 # def mysplatter():
 #     pass
 
+
 def _is_sklearn_xy_pair(x):
     """Determines (well, infers/guesses) if x is an (X, y) pair that sklearn likes to take."""
     return (
-            isinstance(x, tuple)  # is a tuple
-            and len(x) == 2  # ... with 2 elements
-            and len(x[0]) == len(x[1])  # ... of the same length
+        isinstance(x, tuple)  # is a tuple
+        and len(x) == 2  # ... with 2 elements
+        and len(x[0]) == len(x[1])  # ... of the same length
     )
 
 
@@ -109,7 +110,10 @@ def process_viz_args(pts, nodeSize, figsize, fillColors, untaggedColor, alpha=1)
         color_for_tag = fillColors
         unik_tags = ordered_uniks(filter(None, (x.get('tag', None) for x in pts)))
         when_not_found_choose_from_here = iter(dflt_fill_colors)
-        fillColors = [color_for_tag.get(tag, False) or next(when_not_found_choose_from_here) for tag in unik_tags]
+        fillColors = [
+            color_for_tag.get(tag, False) or next(when_not_found_choose_from_here)
+            for tag in unik_tags
+        ]
 
         # If '' and None was mentioned in color_for_tag, the user wants to specify untaggedColor
         if '' in color_for_tag:
@@ -117,7 +121,9 @@ def process_viz_args(pts, nodeSize, figsize, fillColors, untaggedColor, alpha=1)
         elif None in color_for_tag:
             untaggedColor = color_for_tag[None]
 
-    if nodeSize < _max_node_size_ratio:  # if smaller than max_node_size_ratio, it's not pixels,
+    if (
+        nodeSize < _max_node_size_ratio
+    ):  # if smaller than max_node_size_ratio, it's not pixels,
         # but a desired node coverage ratio (approx ratio of the figure coverage by nodes)
         # It assumes the (unknown) nodeSize is a the "radius" of a circle so that
         # node_coverage = n * pi * nodeSize ** 2 / (height * width)
@@ -137,22 +143,31 @@ def process_viz_args(pts, nodeSize, figsize, fillColors, untaggedColor, alpha=1)
 
 
 # TODO: Wishlist: A decorator to automatically make extra_splatter_kwargs explicit (from dflts)
-def splatter(pts,
-             nodeSize=0.02,
-             figsize=(200, 200),
-             fillColors=None,
-             untaggedColor='#444',
-             alpha=1,
-             process_pts=process_pts,
-             process_viz_args=process_viz_args,
-             **extra_splatter_kwargs):
+def splatter(
+    pts,
+    nodeSize=0.02,
+    figsize=(200, 200),
+    fillColors=None,
+    untaggedColor='#444',
+    alpha=1,
+    process_pts=process_pts,
+    process_viz_args=process_viz_args,
+    **extra_splatter_kwargs,
+):
     pts = list(process_pts(pts))
     pts, nodeSize, figsize, fillColors, untaggedColor = process_viz_args(
-        pts, nodeSize, figsize, fillColors, untaggedColor, alpha)
+        pts, nodeSize, figsize, fillColors, untaggedColor, alpha
+    )
     height, width = figsize
-    return splatter_raw(pts, nodeSize=nodeSize, height=height, width=width,
-                        fillColors=fillColors, untaggedColor=untaggedColor,
-                        **extra_splatter_kwargs)
+    return splatter_raw(
+        pts,
+        nodeSize=nodeSize,
+        height=height,
+        width=width,
+        fillColors=fillColors,
+        untaggedColor=untaggedColor,
+        **extra_splatter_kwargs,
+    )
 
 
 # TODO: Forward JS errors to python and handle on python side (raising informative error for e.g.)
@@ -201,11 +216,15 @@ def splatter_raw(*args, **kwargs):
 
 
 def assert_pts_are_valid(pts):
-    if not (isinstance(pts, list)  # pts are a list
-            and len(pts) > 0  # with at least one element
-            and isinstance(pts[0], dict)  # it's elements are dicts (at least the first)
-            and 'fv' in pts[0]):  # that have an 'fv' field
-        raise ValueError("pts must be a non-empty list of dicts that have at least an fv field")
+    if not (
+        isinstance(pts, list)  # pts are a list
+        and len(pts) > 0  # with at least one element
+        and isinstance(pts[0], dict)  # it's elements are dicts (at least the first)
+        and 'fv' in pts[0]
+    ):  # that have an 'fv' field
+        raise ValueError(
+            "pts must be a non-empty list of dicts that have at least an fv field"
+        )
     # All elements have an 'fv' and they are all of the same length
     first_fv_size = len(pts[0]['fv'])
     for pt in pts:
@@ -214,7 +233,9 @@ def assert_pts_are_valid(pts):
         if not isinstance(pt['fv'], list):
             raise ValueError(f"All fvs of pts must be lists. This one was not: {pt}")
         if len(pt['fv']) != first_fv_size:
-            raise ValueError(f"All fvs of pts must be of the same size ({first_fv_size}: {pt}")
+            raise ValueError(
+                f"All fvs of pts must be of the same size ({first_fv_size}: {pt}"
+            )
     return True
 
 
@@ -228,8 +249,9 @@ def _splatter(pts, options):
 
 # Just to note that we can do this with position only args too.
 
+
 def call_func(func, **kwargs):
-    args, kwargs = Sig(func).args_and_kwargs_from_kwargs(kwargs)
+    args, kwargs = Sig(func).mk_args_and_kwargs(kwargs)
     return func(*args, **kwargs)
 
 
@@ -238,8 +260,9 @@ def call_func_ignoring_excess(func, **kwargs):
     Also works if func has some position only arguments.
     """
     s = Sig(func)
-    args, kwargs = s.args_and_kwargs_from_kwargs(s.source_kwargs(**kwargs))
+    args, kwargs = s.mk_args_and_kwargs(s.source_kwargs(**kwargs))
     return func(*args, **kwargs)
+
 
 # TODO: Get defaults from splatter_defaults.json and inject in signature
 # def splatter(pts,
