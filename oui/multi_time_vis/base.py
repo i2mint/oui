@@ -8,7 +8,7 @@ CHANNEL_TYPES = ['audio', 'data']
 def single_time_vis(channel: dict,
                     bt=0,
                     tt=0,
-                    chart_type: Optional[str] = None,
+                    chart_type: str | None = None,
                     enable_playback: bool = True,
                     height: int = 50,
                     params=None,

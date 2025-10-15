@@ -17,7 +17,7 @@ dflt_filename = 'splatter_defaults.json'
 pjoin = lambda *p: os.path.join(pkg_dir, *p)
 dflts_filepath = pjoin(dflt_filename)
 
-dflts = json.load(open(dflts_filepath, 'r'))
+dflts = json.load(open(dflts_filepath))
 splatter_dflts = dict(dflts['options'], **dflts['tsneOptions'])
 
 _splatter_raw_sig = Sig.from_objs('pts', splatter_dflts.items())

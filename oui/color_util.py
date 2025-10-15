@@ -1,5 +1,5 @@
 from oui import get_pkg_data
-from typing import Iterable
+from collections.abc import Iterable
 
 alpha_less_rgb_hex_length = len('#aabbcc')
 

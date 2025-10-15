@@ -1,7 +1,7 @@
 import io
 import os
 from pathlib import PurePath
-from typing import Iterable
+from collections.abc import Iterable
 from oui.multi_time_vis.base import single_time_vis
 
 CHANNEL_TYPES = ['audio', 'data']
