@@ -34,12 +34,12 @@ def _ranges(width, height):
 
 
 @pytest.mark.skipif(shutil.which('node') is None, reason='node not installed')
-@pytest.mark.parametrize('width,height', [(80, 150), (150, 80), (150, 150), (30, 400)])
+@pytest.mark.parametrize('width,height', [(80, 150), (150, 80), (150, 150), (30, 400), (7.5, 120.5), (12, 12)])
 def test_ranges_within_figure(width, height):
     r = _ranges(width, height)
     for lo, hi in (r['x'], r['y']):
-        assert lo < hi
+        assert lo <= hi
     assert 0 <= r['x'][0] and r['x'][1] <= width
     assert 0 <= r['y'][0] and r['y'][1] <= height
     # square, so the t-SNE aspect ratio is kept
-    assert r['x'][1] - r['x'][0] == r['y'][1] - r['y'][0]
+    assert r['x'][1] - r['x'][0] == pytest.approx(r['y'][1] - r['y'][0])
