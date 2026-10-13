@@ -45,10 +45,13 @@ export class Splatter {
         this.tagSet = [];
         this.delay = 1000 / this.options.fps;
         const { width, height } = this.options;
+        // Fit a square (t-SNE keeps the aspect ratio) of side min(width, height), centered in
+        // the figure, so nodes stay inside the svg whichever side is longer.
+        const half = Math.min(width, height) / 2 - margin;
         this.centerx = d3.scaleLinear()
-            .range([width / 2 - height / 2 + margin, width / 2 + height / 2 - margin]);
+            .range([width / 2 - half, width / 2 + half]);
         this.centery = d3.scaleLinear()
-            .range([margin, height - margin]);
+            .range([height / 2 - half, height / 2 + half]);
     }
 
     getColor(tag: string) {
