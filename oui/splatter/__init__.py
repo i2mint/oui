@@ -126,10 +126,11 @@ def process_viz_args(pts, nodeSize, figsize, fillColors, untaggedColor, alpha=1)
     ):  # if smaller than max_node_size_ratio, it's not pixels,
         # but a desired node coverage ratio (approx ratio of the figure coverage by nodes)
         # It assumes the (unknown) nodeSize is a the "radius" of a circle so that
-        # node_coverage = n * pi * nodeSize ** 2 / (height * width)
+        # node_coverage = n * pi * nodeSize ** 2 / side ** 2
+        # where side = min(height, width): only that square is used for the layout.
         # And solves for nodeSize to get desired coverage.
         node_coverage = nodeSize
-        nodeSize = max(1, sqrt(node_coverage * (height * width) / (pi * n)))
+        nodeSize = max(1, sqrt(node_coverage * min(height, width) ** 2 / (pi * n)))
 
     assert 0 <= alpha <= 1, f"alpha should be between 0 and 1, was {alpha}"
     fillColors = list(map(color_hex_from, fillColors))
@@ -152,9 +153,18 @@ def splatter(
     alpha=1,
     process_pts=process_pts,
     process_viz_args=process_viz_args,
+    *,
+    height=None,
+    width=None,
     **extra_splatter_kwargs,
 ):
+    """Splatter ``pts``. Note: ``figsize`` is ``(height, width)``, the opposite of
+    matplotlib's ``(width, height)``. Use the keyword-only ``height`` / ``width`` to be
+    explicit; they override the corresponding ``figsize`` entry."""
     pts = list(process_pts(pts))
+    if height is not None or width is not None:
+        h0, w0 = (figsize, figsize) if isinstance(figsize, (int, float)) else figsize
+        figsize = (h0 if height is None else height, w0 if width is None else width)
     pts, nodeSize, figsize, fillColors, untaggedColor = process_viz_args(
         pts, nodeSize, figsize, fillColors, untaggedColor, alpha
     )

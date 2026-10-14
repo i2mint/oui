@@ -47,7 +47,8 @@ export class Splatter {
         const { width, height } = this.options;
         // Fit a square (t-SNE keeps the aspect ratio) of side min(width, height), centered in
         // the figure, so nodes stay inside the svg whichever side is longer.
-        const half = Math.max(0, Math.min(width, height) / 2 - margin);
+        // Circles are drawn at scale(2), so their on-screen radius is 2 * nodeSize.
+        const half = Math.max(0, Math.min(width, height) / 2 - Math.max(margin, 2 * this.options.nodeSize));
         this.centerx = d3.scaleLinear()
             .range([width / 2 - half, width / 2 + half]);
         this.centery = d3.scaleLinear()
