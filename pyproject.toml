@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "oui"
-version = "0.3.3"
+version = "0.3.4"
 description = "There is a bit of an air of mystery around this project..."
 readme = "README.md"
 license = "MIT"
