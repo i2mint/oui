@@ -1,3 +1,5 @@
+"""Config CRUD dash components."""
+
 import os
 import dash
 import dash_html_components as html

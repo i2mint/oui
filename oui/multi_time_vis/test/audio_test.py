@@ -1,3 +1,5 @@
+"""Tests for audio helpers."""
+
 from oui.multi_time_vis.test import dpath
 
 
