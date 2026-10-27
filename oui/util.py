@@ -1,3 +1,5 @@
+"""General utilities."""
+
 class ModuleNotFoundIgnore:
     def __enter__(self):
         pass

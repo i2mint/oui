@@ -1,3 +1,5 @@
+"""Config store for the config CRUD app."""
+
 import json
 import anymarkup
 from py2store.stores.local_store import RelativePathFormatStoreEnforcingFormat as LocalFileStore

@@ -1,3 +1,5 @@
+"""Audio helpers for multi-time visualization."""
+
 import io
 import os
 from pathlib import PurePath

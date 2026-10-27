@@ -1,3 +1,5 @@
+"""Base multi-time visualization tools."""
+
 from IPython.display import Javascript
 from copy import copy
 from typing import Optional

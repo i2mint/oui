@@ -1,3 +1,5 @@
+"""Color utilities."""
+
 from oui import get_pkg_data
 from collections.abc import Iterable
 
