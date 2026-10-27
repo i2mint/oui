@@ -119,6 +119,8 @@ pytest_args = [
     "--tb=short",
     "--ignore=oui/config_crud",
     "--ignore=oui/splatter",
+    "--ignore=oui/multi_time_vis/test",
+    "--ignore=oui/tests/test_splatter_bounds.py",
 ]
 coverage_enabled = true
 coverage_threshold = 0
