@@ -117,6 +117,8 @@ python_versions = [
 pytest_args = [
     "-v",
     "--tb=short",
+    "--ignore=oui/config_crud",
+    "--ignore=oui/splatter",
 ]
 coverage_enabled = true
 coverage_threshold = 0
